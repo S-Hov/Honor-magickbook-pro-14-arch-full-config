@@ -1,0 +1,23 @@
+#!/bin/bash
+# mkinitcpio install hook
+# Pushes every *.aml file from /usr/lib/firmware/acpi/ into the kernel-expected
+# location inside the *early* (uncompressed) CPIO image. The Linux ACPI loader
+# only reads overrides from the early CPIO — using add_file (main archive)
+# silently does nothing.
+# See: Documentation/admin-guide/acpi/initrd_table_override.rst
+
+build() {
+    local f
+    for f in /usr/lib/firmware/acpi/*.aml; do
+        [[ -f $f ]] || continue
+        add_file_early "$f" "/kernel/firmware/acpi/$(basename "$f")" 644
+    done
+}
+
+help() {
+    cat <<HELPEOF
+Stages every *.aml file under /usr/lib/firmware/acpi/ into the early
+uncompressed CPIO at /kernel/firmware/acpi/ so the kernel applies them
+as ACPI table overrides.
+HELPEOF
+}

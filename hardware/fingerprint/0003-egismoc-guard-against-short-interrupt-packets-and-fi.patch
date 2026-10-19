@@ -1,0 +1,93 @@
+From df43f35c2490bbc1b6e191549b20b6d6a422bb0c Mon Sep 17 00:00:00 2001
+From: Philip Walsh <packages@drphilth.com>
+Date: Fri, 3 Jul 2026 09:01:30 +0100
+Subject: [PATCH 3/3] egismoc: guard against short interrupt packets and fix
+ duplicate check
+
+Two robustness fixes observed on the ET171 (1c7a:05aa) but applicable
+to the whole driver family:
+
+- egismoc_finger_on_sensor_cb() passed the raw interrupt payload to
+  egismoc_validate_response_suffix(), which indexes
+  buffer[length - suffix_length] without a bounds check. The interrupt
+  endpoint can deliver short packets (the 0x05aa streams firmware log
+  fragments over it between finger events), making that an
+  out-of-bounds read. Check the minimum length first.
+
+- egismoc_enroll_check_cb() treated any response other than
+  "not yet enrolled" (SW 90 04) as a duplicate finger. A genuine
+  duplicate is a positive identify match (SW 90 00), exactly as in the
+  verify path; a transient error status (neither 90 00 nor 90 04) was
+  misreported as "finger already enrolled". Only a confirmed match now
+  blocks enrollment.
+---
+ libfprint/drivers/egismoc/egismoc.c | 28 +++++++++++++++++++++-------
+ libfprint/drivers/egismoc/egismoc.h |  2 --
+ 2 files changed, 21 insertions(+), 9 deletions(-)
+
+diff --git a/libfprint/drivers/egismoc/egismoc.c b/libfprint/drivers/egismoc/egismoc.c
+index f1c7a4e..3ef23bc 100644
+--- a/libfprint/drivers/egismoc/egismoc.c
++++ b/libfprint/drivers/egismoc/egismoc.c
+@@ -384,8 +384,16 @@ egismoc_finger_on_sensor_cb (FpiUsbTransfer *transfer,
+       return;
+     }
+ 
+-  /* finger is "present" when buffer begins with "SIGE" and ends in valid suffix */
+-  if (memcmp (transfer->buffer, egismoc_read_prefix, 4) == 0 &&
++  /*
++   * Finger is "present" when the buffer begins with "SIGE" and ends in a
++   * valid suffix. Guard the length first: the interrupt endpoint can
++   * deliver short packets (e.g. 0x05aa streams firmware log fragments on
++   * it) and egismoc_validate_response_suffix() indexes
++   * buffer[length - suffix_length] with no bounds check, so a short frame
++   * would read before the start of the buffer.
++   */
++  if (transfer->actual_length >= egismoc_read_prefix_len + rsp_sensor_has_finger_suffix_len &&
++      memcmp (transfer->buffer, egismoc_read_prefix, 4) == 0 &&
+       egismoc_validate_response_suffix (transfer->buffer,
+                                         transfer->actual_length,
+                                         rsp_sensor_has_finger_suffix,
+@@ -1032,15 +1040,21 @@ egismoc_enroll_check_cb (FpDevice *device,
+       return;
+     }
+ 
+-  /* Check that the read payload reports "not yet enrolled" */
++  /*
++   * A genuine duplicate is a positive identify match (SW 90 00), exactly
++   * as in verify. Treating anything but "not yet enrolled" (90 04) as a
++   * duplicate misclassifies a marginal capture (a transient error status
++   * is neither 90 00 nor 90 04) as "already enrolled". Only a confirmed
++   * match should block enrollment.
++   */
+   if (egismoc_validate_response_suffix (buffer_in,
+                                         length_in,
+-                                        rsp_check_not_yet_enrolled_suffix,
+-                                        rsp_check_not_yet_enrolled_suffix_len))
+-    fpi_ssm_next_state (self->task_ssm);
+-  else
++                                        rsp_identify_match_suffix,
++                                        rsp_identify_match_suffix_len))
+     egismoc_enroll_status_report (device, NULL, ENROLL_STATUS_DUPLICATE,
+                                   fpi_device_error_new (FP_DEVICE_ERROR_DATA_DUPLICATE));
++  else
++    fpi_ssm_next_state (self->task_ssm);
+ }
+ 
+ /*
+diff --git a/libfprint/drivers/egismoc/egismoc.h b/libfprint/drivers/egismoc/egismoc.h
+index 527d3a9..a14620e 100644
+--- a/libfprint/drivers/egismoc/egismoc.h
++++ b/libfprint/drivers/egismoc/egismoc.h
+@@ -160,8 +160,6 @@ static guchar cmd_check_prefix_type2[] = {0x50, 0x17, 0x03, 0x80, 0x00};
+ static gsize cmd_check_prefix_type2_len = sizeof (cmd_check_prefix_type2) / sizeof (cmd_check_prefix_type2[0]);
+ static guchar cmd_check_suffix[] = {0x00, 0x40};
+ static gsize cmd_check_suffix_len = sizeof (cmd_check_suffix) / sizeof (cmd_check_suffix[0]);
+-static guchar rsp_check_not_yet_enrolled_suffix[] = {0x90, 0x04};
+-static gsize rsp_check_not_yet_enrolled_suffix_len = sizeof (rsp_check_not_yet_enrolled_suffix) / sizeof (rsp_check_not_yet_enrolled_suffix[0]);
+ 
+ 
+ /* SSM task states and various status enums */
+-- 
+2.53.0
+

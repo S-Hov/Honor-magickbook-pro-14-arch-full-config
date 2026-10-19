@@ -1,0 +1,75 @@
+From 3b4a514df0c61a2756c21ea599fd8cf2915c4cc0 Mon Sep 17 00:00:00 2001
+From: Philip Walsh <packages@drphilth.com>
+Date: Fri, 3 Jul 2026 08:30:39 +0100
+Subject: [PATCH 1/3] egismoc: add EgisTec ET171 (1c7a:05aa) support
+
+The ET171 (found in the 2025 HONOR MagicBook Pro 14, FMB-P) is an SDCP
+match-on-chip sensor using the existing egismoc protocol with one
+quirk: it stalls on the vendor init control transfers
+(DEV_INIT_CONTROL1-5), so a new EGISMOC_DRIVER_SKIP_CONTROL_INIT
+driver_data flag skips straight to the firmware-version command
+(without it, open fails with "endpoint stalled or request not
+supported" on the first transfer). This matches the Windows driver,
+whose captures contain no such vendor control transfers.
+
+Community out-of-tree ports of this device also sent an extra list
+command before SDCP Connect; testing against this branch shows the
+device does not need it (verified from a cold power-on with no prior
+host contact), so it is not carried over.
+
+Enrollment uses 15 stages, prefix check type 2.
+
+Verified on hardware (HONOR MagicBook Pro 14 2025, FMB-P): enroll,
+verify/identify (match and non-match), PAM login and lock-screen
+unlock, suspend/resume reconnect.
+---
+ libfprint/drivers/egismoc/egismoc.c | 13 +++++++++++++
+ libfprint/drivers/egismoc/egismoc.h |  1 +
+ 2 files changed, 14 insertions(+)
+
+diff --git a/libfprint/drivers/egismoc/egismoc.c b/libfprint/drivers/egismoc/egismoc.c
+index 736730d..f1c7a4e 100644
+--- a/libfprint/drivers/egismoc/egismoc.c
++++ b/libfprint/drivers/egismoc/egismoc.c
+@@ -58,6 +58,7 @@ static const FpIdEntry egismoc_id_table[] = {
+   { .vid = 0x1c7a, .pid = 0x0588, .driver_data = EGISMOC_DRIVER_CHECK_PREFIX_TYPE1 | EGISMOC_DRIVER_MAX_ENROLL_STAGES_20 },
+   { .vid = 0x1c7a, .pid = 0x05a1, .driver_data = EGISMOC_DRIVER_CHECK_PREFIX_TYPE2 },
+   { .vid = 0x1c7a, .pid = 0x05a5, .driver_data = EGISMOC_DRIVER_CHECK_PREFIX_TYPE2 | EGISMOC_DRIVER_MAX_ENROLL_STAGES_15 },
++  { .vid = 0x1c7a, .pid = 0x05aa, .driver_data = EGISMOC_DRIVER_CHECK_PREFIX_TYPE2 | EGISMOC_DRIVER_MAX_ENROLL_STAGES_15 | EGISMOC_DRIVER_SKIP_CONTROL_INIT },
+   { .vid = 0,      .pid = 0,      .driver_data = 0 }
+ };
+ 
+@@ -1673,6 +1674,18 @@ egismoc_dev_init_handler (FpiSsm   *ssm,
+ {
+   g_autoptr(FpiUsbTransfer) transfer = fpi_usb_transfer_new (device);
+ 
++  /*
++   * Some devices (e.g. 0x05aa) do not support the vendor "init" control
++   * transfers and will stall on them; skip straight to fetching the
++   * firmware version for those.
++   */
++  if ((fpi_device_get_driver_data (device) & EGISMOC_DRIVER_SKIP_CONTROL_INIT) &&
++      fpi_ssm_get_cur_state (ssm) < DEV_GET_FW_VERSION)
++    {
++      fpi_ssm_next_state (ssm);
++      return;
++    }
++
+   switch (fpi_ssm_get_cur_state (ssm))
+     {
+     case DEV_INIT_CONTROL1:
+diff --git a/libfprint/drivers/egismoc/egismoc.h b/libfprint/drivers/egismoc/egismoc.h
+index 06f7410..527d3a9 100644
+--- a/libfprint/drivers/egismoc/egismoc.h
++++ b/libfprint/drivers/egismoc/egismoc.h
+@@ -34,6 +34,7 @@ G_DECLARE_FINAL_TYPE (FpiDeviceEgisMoc, fpi_device_egismoc, FPI, DEVICE_EGISMOC,
+ #define EGISMOC_DRIVER_CHECK_PREFIX_TYPE2 (1 << 1)
+ #define EGISMOC_DRIVER_MAX_ENROLL_STAGES_20 (1 << 2)
+ #define EGISMOC_DRIVER_MAX_ENROLL_STAGES_15 (1 << 3)
++#define EGISMOC_DRIVER_SKIP_CONTROL_INIT (1 << 4)
+ 
+ #define EGISMOC_EP_CMD_OUT (0x02 | FPI_USB_ENDPOINT_OUT)
+ #define EGISMOC_EP_CMD_IN (0x81 | FPI_USB_ENDPOINT_IN)
+-- 
+2.53.0
+

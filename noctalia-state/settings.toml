@@ -1,0 +1,69 @@
+config_version = 15
+
+[bar.default]
+end = [
+    "media",
+    "notifications",
+    "clipboard",
+    "network",
+    "bluetooth",
+    "volume",
+    "brightness",
+    "battery",
+    "control-center",
+    "session"
+]
+start = [ "launcher", "wallpaper", "group:workspaces_group", "tray", "clock" ]
+
+[lockscreen_widgets]
+enabled = false
+schema_version = 2
+widget_order = [ "lockscreen-login-box@eDP-1" ]
+
+    [lockscreen_widgets.grid]
+    cell_size = 16
+    major_interval = 4
+    visible = true
+
+    [lockscreen_widgets.widget."lockscreen-login-box@eDP-1"]
+    box_height = 196.0
+    box_width = 810.0
+    cx = 780.0
+    cy = 858.0
+    output = "eDP-1"
+    placement_height = 1040.0
+    placement_width = 1560.0
+    rotation = 0.0
+    type = "login_box"
+
+        [lockscreen_widgets.widget."lockscreen-login-box@eDP-1".settings]
+        background_color = "surface_variant"
+        background_opacity = 0.88
+        background_radius = 12.0
+        center_password_text = false
+        input_opacity = 1.0
+        input_radius = 6.0
+        layout = "regular"
+        show_caps_lock = true
+        show_keyboard_layout = true
+        show_login_button = true
+        show_media = true
+        show_password_reveal = true
+        show_session_buttons = true
+        show_unlock_hint = true
+        show_weather = true
+
+[wallpaper.default]
+path = "@@HOME@@/Pictures/wallpapers/minimal-enso-samurai-4k.png"
+
+[wallpaper.last]
+path = "@@HOME@@/Pictures/wallpapers/minimal-enso-samurai-4k.png"
+
+[wallpaper.monitors.eDP-1]
+path = "@@HOME@@/Pictures/wallpapers/minimal-enso-samurai-4k.png"
+
+[widget.control-center]
+enabled = false
+
+[widget.media]
+enabled = false

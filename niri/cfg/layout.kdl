@@ -1,0 +1,42 @@
+// Геометрия окон / Window geometry
+layout {
+    gaps 10
+    center-focused-column "never"
+    // Первое окно на пустом рабочем столе появляется по центру.
+    always-center-single-column
+    background-color "transparent"
+
+    // Киноварный акцент только на активном окне; неактивная рамка
+    // почти сливается с тёмными поверхностями.
+    focus-ring {
+        off
+    }
+
+    border {
+        on
+        width 2
+        active-color "#d95757"
+        inactive-color "#24262c"
+        urgent-color "#ff707f"
+    }
+
+    // Мягкое отделение окон от обоев без тяжёлого glow-эффекта.
+    shadow {
+        on
+        softness 30
+        spread 3
+        offset x=0 y=5
+        color "#00000070"
+        inactive-color "#00000045"
+    }
+
+    // Удобно для обычных и широких мониторов / Good for regular and ultrawide screens
+    preset-column-widths {
+        proportion 0.33333
+        proportion 0.5
+        proportion 0.66667
+    }
+
+    default-column-width { proportion 0.5; }
+    struts {}
+}

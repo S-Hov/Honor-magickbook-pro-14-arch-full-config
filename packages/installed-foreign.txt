@@ -1,0 +1,8 @@
+brave-bin
+cliamp-bin
+cliamp-bin-debug
+happ
+hiddify-desktop-bin
+shelly-bin
+yay
+yay-debug

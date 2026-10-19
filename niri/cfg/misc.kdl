@@ -1,0 +1,61 @@
+// Wayland и приложения / Wayland application environment
+prefer-no-csd
+screenshot-path null
+
+environment {
+    ELECTRON_OZONE_PLATFORM_HINT "auto"
+    QT_QPA_PLATFORM "wayland"
+    QT_WAYLAND_DISABLE_WINDOWDECORATION "1"
+    XDG_SESSION_TYPE "wayland"
+    XDG_CURRENT_DESKTOP "niri"
+    QT_QPA_PLATFORMTHEME "gtk3"
+    TERMINAL "kitty"
+    BROWSER "brave"
+}
+
+debug {
+    honor-xdg-activation-with-invalid-serial
+
+}
+
+hotkey-overlay {
+    skip-at-startup
+}
+
+// Calm, dark workspace overview / Спокойный тёмный обзор рабочих столов
+overview {
+    zoom 0.46
+    backdrop-color "#08090b"
+
+    workspace-shadow {
+        softness 48
+        spread 8
+        offset x=0 y=12
+        color "#00000080"
+    }
+}
+
+// Native live-window Alt+Tab / Нативный Alt+Tab с живыми превью окон
+recent-windows {
+    debounce-ms 500
+    open-delay-ms 90
+
+    highlight {
+        active-color "#d9575738"
+        urgent-color "#ff707f70"
+        padding 20
+        corner-radius 18
+    }
+
+    previews {
+        max-height 460
+        max-scale 0.58
+    }
+
+    binds {
+        Alt+Tab { next-window scope="all"; }
+        Alt+Shift+Tab { previous-window scope="all"; }
+        Alt+grave { next-window scope="all" filter="app-id"; }
+        Alt+Shift+grave { previous-window scope="all" filter="app-id"; }
+    }
+}

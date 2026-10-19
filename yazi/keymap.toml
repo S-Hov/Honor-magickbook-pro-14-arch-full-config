@@ -1,0 +1,25 @@
+[mgr]
+
+prepend_keymap = [
+    # Копирование выбранных файлов
+    { on = "c", run = "yank", desc = "Копировать выбранные файлы" },
+
+    # Вырезание выбранных файлов
+    { on = "x", run = "yank --cut", desc = "Вырезать выбранные файлы" },
+
+    # Вставка файлов
+    { on = "v", run = "paste", desc = "Вставить файлы" },
+
+    # Переименование
+    { on = "r",        run = "rename --cursor=before_ext", desc = "Переименовать" },
+    { on = "<Delete>", run = "rename --cursor=before_ext", desc = "Переименовать" },
+
+    # Поиск файлов через fd
+    { on = "s", run = "search --via=fd", desc = "Поиск файлов" },
+
+    # Новая вкладка в текущей директории
+    { on = "t", run = "tab_create --current", desc = "Новая вкладка" },
+
+    # Закрыть текущую вкладку
+    { on = "<C-t>", run = "close", desc = "Закрыть вкладку" },
+]

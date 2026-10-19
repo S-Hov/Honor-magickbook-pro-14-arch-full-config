@@ -1,0 +1,17 @@
+[
+  {
+    "label": "Открыть Kitty в проекте",
+    "command": "/usr/bin/kitty",
+    "args": [
+      "--detach",
+      "--directory",
+      "$ZED_WORKTREE_ROOT"
+    ],
+    "reveal": "never",
+    "hide": "on_success",
+    "show_summary": false,
+    "show_command": false,
+    "allow_concurrent_runs": true,
+    "use_new_terminal": false
+  }
+]

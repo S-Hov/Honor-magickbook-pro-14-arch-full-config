@@ -1,0 +1,35 @@
+// Общий визуальный стиль / Shared visual style
+window-rule {
+    geometry-corner-radius 14
+    clip-to-geometry true
+}
+
+// Picture-in-Picture сразу плавающее / PiP opens floating
+window-rule {
+    match title="^Picture-in-Picture$"
+    open-floating true
+}
+
+// Браузеры открываются во всю ширину / Browsers open full width
+window-rule {
+    match app-id="brave-browser"
+    match app-id="Brave-browser"
+    match app-id="firefox"
+    default-column-width { proportion 1.0; }
+    open-maximized true
+}
+
+
+// Окно настроек Noctalia v5 / Noctalia v5 settings window
+window-rule {
+    match app-id="dev.noctalia.Noctalia"
+    open-floating true
+    default-column-width { fixed 1080; }
+    default-window-height { fixed 920; }
+}
+
+// Обои Noctalia остаются за окнами / Keep Noctalia wallpaper behind windows
+layer-rule {
+    match namespace="^noctalia-wallpaper"
+    place-within-backdrop true
+}

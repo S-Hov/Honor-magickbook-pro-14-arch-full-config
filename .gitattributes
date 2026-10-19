@@ -1,0 +1,9 @@
+# Dotfiles are consumed on Linux; keep shell and config files free of CRLF.
+* text=auto eol=lf
+
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary

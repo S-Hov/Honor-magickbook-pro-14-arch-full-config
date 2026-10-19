@@ -1,0 +1,36 @@
+_reload() {
+    ldconfig
+    # fprintd is D-Bus activated and long-lived; restart it so it picks up the SDCP library
+    # (or drops it again on removal) without needing a reboot.
+    if systemctl is-active --quiet fprintd 2>/dev/null; then
+        systemctl restart fprintd || true
+    fi
+}
+
+post_install() {
+    _reload
+    cat <<'EOF'
+>>> honor-fmbp-libfprint-sdcp installed.
+>>>
+>>> This wins over the stock libfprint via /etc/ld.so.conf.d/000-honor-fmbp-fprint.conf.
+>>> Confirm fprintd is using it:
+>>>   ldconfig -p | grep libfprint-2.so.2      # /usr/lib/honor-fmbp/... must be listed FIRST
+>>>
+>>> Enroll (the ET171 wants ~15 touches):
+>>>   fprintd-enroll && fprintd-verify
+>>>
+>>> KDE lock-screen unlock then works with no PAM edits — Plasma ships the
+>>> kde-fingerprint stack. NOTE: the LOGIN screen does not support fingerprint;
+>>> that is an upstream gap (plasma-login-manager issue #1), not a misconfiguration.
+EOF
+}
+
+post_upgrade() {
+    _reload
+}
+
+post_remove() {
+    _reload
+    echo ">>> honor-fmbp-libfprint-sdcp removed — fprintd falls back to the stock libfprint,"
+    echo ">>> which cannot talk to the SDCP-gated ET171. Fingerprint will stop working."
+}

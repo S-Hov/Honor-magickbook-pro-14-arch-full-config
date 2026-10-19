@@ -1,0 +1,179 @@
+[system.monitor]
+enabled = true
+cpu_poll_seconds = 1.0
+gpu_poll_seconds = 2.0
+memory_poll_seconds = 2.0
+disk_poll_seconds = 10.0
+network_poll_seconds = 1.0
+
+# Compact animated Alt+Tab, ordered by recently used windows.
+[shell.window_switcher]
+style = "compact"
+mru = true
+show_caption = true
+show_count = true
+show_app_icon = true
+show_all_outputs = true
+current_workspace_only = false
+
+# ── Bar ───────────────────────────────────────────────────────────────────────
+
+[bar.default]
+position = "top"
+background_opacity = 0.95
+start = [ "launcher", "wallpaper", "group:workspaces_group", "clock" ]
+center = [ "group:cpu_group", "group:gpu_group", "group:ram_group", "group:disk_group", "group:net_group" ]
+end = [ "media", "tray", "notifications", "clipboard", "network", "bluetooth", "volume", "brightness", "battery", "control-center", "session" ]
+
+[[bar.default.capsule_group]]
+id = "cpu_group"
+members = [ "cpu_usage", "cpu_temp" ]
+fill = "surface_variant"
+opacity = 1.0
+padding = 6.0
+enabled = true
+
+[[bar.default.capsule_group]]
+id = "gpu_group"
+members = [ "gpu_usage" ]
+fill = "surface_variant"
+opacity = 1.0
+padding = 6.0
+enabled = true
+
+[[bar.default.capsule_group]]
+id = "ram_group"
+members = [ "ram_usage" ]
+fill = "surface_variant"
+opacity = 1.0
+padding = 6.0
+enabled = true
+
+[[bar.default.capsule_group]]
+id = "disk_group"
+members = [ "disk_usage" ]
+fill = "surface_variant"
+opacity = 1.0
+padding = 6.0
+enabled = true
+
+[[bar.default.capsule_group]]
+id = "net_group"
+members = [ "net_rx", "net_tx" ]
+fill = "surface_variant"
+opacity = 1.0
+padding = 6.0
+enabled = true
+
+[[bar.default.capsule_group]]
+id = "workspaces_group"
+members = [ "workspaces" ]
+fill = "surface_variant"
+opacity = 1.0
+padding = 6.0
+enabled = true
+
+# ── CPU Widgets ───────────────────────────────────────────────────────────────
+
+[widget.cpu_usage]
+type = "sysmon"
+stat = "cpu_usage"
+visualization = "gauge"
+show_glyph = true
+show_value = true
+
+[widget.cpu_temp]
+type = "sysmon"
+stat = "cpu_temp"
+visualization = "none"
+show_glyph = true
+show_value = true
+
+# ── RAM Widget ────────────────────────────────────────────────────────────────
+
+[widget.ram_usage]
+type = "sysmon"
+stat = "ram_pct"
+visualization = "gauge"
+show_glyph = true
+show_value = true
+
+# ── GPU Widgets ───────────────────────────────────────────────────────────────
+
+[widget.gpu_usage]
+type = "sysmon"
+stat = "gpu_usage"
+visualization = "gauge"
+show_glyph = true
+show_value = true
+
+[widget.gpu_temp]
+type = "sysmon"
+stat = "gpu_temp"
+visualization = "none"
+show_glyph = true
+show_value = true
+
+[widget.gpu_vram]
+type = "sysmon"
+stat = "gpu_vram"
+visualization = "none"
+show_glyph = true
+show_value = true
+
+[theme]
+source = "custom"
+custom_palette = "SumiRed"
+mode = "dark"
+shell_mode = "dark"
+pure_black_dark = false
+
+[theme.templates]
+enable_builtin_templates = true
+builtin_ids = [ "gtk3", "gtk4", "btop", "helix", "kitty", "qt", "kcolorscheme" ]
+enable_community_templates = true
+community_ids = [ "codex", "telegram", "pywalfox", "ungoogled-chromium", "vscode", "yazi" ]
+
+# ── Disk Widget ───────────────────────────────────────────────────────────────
+
+[widget.disk_usage]
+type = "sysmon"
+stat = "disk_used_pct"
+path = "/"
+visualization = "none"
+show_glyph = true
+show_value = true
+
+# ── Network Widgets ───────────────────────────────────────────────────────────
+
+[widget.net_rx]
+type = "sysmon"
+stat = "net_rx"
+network_speed_unit = "auto"
+network_speed_compact = true
+visualization = "none"
+show_glyph = true
+show_value = true
+
+[widget.net_tx]
+type = "sysmon"
+stat = "net_tx"
+network_speed_unit = "auto"
+network_speed_compact = true
+visualization = "none"
+show_glyph = true
+show_value = true
+
+[wallpaper]
+enabled = true
+directory = "@@HOME@@/Pictures/wallpapers"
+fill_mode = "crop"
+
+[wallpaper.default]
+path = "@@HOME@@/Pictures/wallpapers/sumi-samurai-lake.png"
+
+[widget.network]
+show_label = false
+
+[widget.media]
+album_art_only = true

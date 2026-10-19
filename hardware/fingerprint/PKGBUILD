@@ -1,0 +1,104 @@
+# Maintainer: Philip Walsh <packages@drphilth.com>
+#
+# SDCP-capable libfprint for the HONOR MagicBook Pro 14 2025 (FMB-P) fingerprint reader —
+# EgisTec / LighTuning ET171, USB 1c7a:05aa.
+#
+# Stock egismoc has no SDCP; this sensor gates enroll/verify behind Microsoft SDCP, so the
+# in-tree driver simply cannot talk to it. Upstream here is libfprint's feature/sdcp-v2
+# branch at a pinned commit, plus the ET171 device support: the 05aa id, the SDCP-init
+# (`50 19 04`) sent BEFORE connect, a surgical skip of the USB control-init the ET171 does
+# not implement, and 15 enroll stages. That SDCP-init is the crux — without it the firmware
+# floods the 0x83 interrupt endpoint with a debug log and finger-status never gets through.
+#
+# COEXISTENCE: this does NOT replace the system libfprint. It installs only the runtime
+# library, into a private directory, plus an ld.so.conf.d entry that sorts ahead of the
+# default paths so our SDCP-capable libfprint-2.so.2 wins for fprintd. Removing the package
+# restores the stock library with no other change. (Same approach as the Debian package in
+# this repo; only the libdir differs — /usr/lib here vs /usr/lib/x86_64-linux-gnu there.)
+
+pkgname=honor-fmbp-libfprint-sdcp
+pkgver=1.94.10+sdcpv2
+pkgrel=2
+pkgdesc='SDCP-capable libfprint for the HONOR FMB-P EgisTec ET171 (1c7a:05aa), in a private libdir'
+arch=('x86_64')
+url='https://github.com/drphilth/honor-fmbp-libfprint-sdcp'
+license=('LGPL-2.1-or-later')
+depends=('glib2' 'libgusb' 'openssl')
+# glib2-devel supplies glib-mkenums: Arch split it out of glib2, and without it meson dies with
+#   Dependency 'glib-2.0' tool variable 'glib_mkenums' contains erroneous value
+makedepends=('meson' 'ninja' 'pkgconf' 'glib2-devel' 'git')
+optdepends=('fprintd: PAM/D-Bus fingerprint service — KDE uses it for lock-screen unlock')
+install="${pkgname}.install"
+
+# Pinned upstream: libfprint feature/sdcp-v2. Pinning the commit (not the branch) keeps the
+# build reproducible; nothing needs to be vendored or hosted.
+_commit=2d7c5277de08c6b29b3fac7447f17a516fbc4d1c
+source=(
+  "libfprint::git+https://gitlab.freedesktop.org/libfprint/libfprint.git#commit=${_commit}"
+  '0001-egismoc-add-EgisTec-ET171-1c7a-05aa-support.patch'
+  '0002-sdcp-mark-identified-print-as-device-stored.patch'
+  '0003-egismoc-guard-against-short-interrupt-packets-and-fi.patch'
+  '0004-sdcp-fix-intermittent-open-hang-on-short-host-privat.patch'
+  '0005-egismoc-fail-the-task-SSM-on-identify-and-finger-wai.patch'
+  '0006-egismoc-bounds-check-the-SDCP-ConnectResponse-agains.patch'
+  '0100-skip-unshipped-tests-examples.patch'
+)
+sha256sums=(
+  'SKIP'
+  '725765d34caba5d18fb3eb2c7c4491b5480de85affc82fa9a34acc6102e1761e'
+  'adbef414f1594709c0e84eee6b3d297ea30159ba75c6abb42bdb8904a840fead'
+  '3b7914cb23673c36098f7c6c4951a5a823e783632c23c9fe393250a7a701a2d5'
+  'e5b2f97beffde25068a40e35753ee1e3e47706ed2fcd37199493878cfd5178e5'
+  '8e835a0cb65334db7f6812ee7adae4c427badeeb4a76bf244581a11456ed08d1'
+  'ba5ad1eebddd197c9bc17b5ae6565518788fa0190aa7824bd2b952a101723942'
+  '81fe90c7dd03c78e8b2cee1ebf87c6326f573d60bb2df20af0cc32c14c9f3174'
+)
+
+prepare() {
+  cd libfprint
+  for p in "$srcdir"/0*.patch; do
+    echo "applying $(basename "$p")"
+    patch -p1 -i "$p"
+  done
+}
+
+build() {
+  cd libfprint
+  # egismoc only: we ship one driver's runtime library, not a full libfprint. udev rules/hwdb
+  # are disabled because the stock libfprint package already owns those paths and we must not
+  # collide with it.
+  arch-meson build \
+    -Ddrivers=egismoc \
+    -Dgtk-examples=false \
+    -Dintrospection=false \
+    -Ddoc=false \
+    -Dudev_rules=disabled \
+    -Dudev_hwdb=disabled \
+    -Dinstalled-tests=false
+  meson compile -C build
+}
+
+package() {
+  cd libfprint
+  # Cherry-pick ONLY the runtime library, into a private dir. Never install at the stock
+  # libfprint's public paths (headers, pkgconfig, the public .so) or we conflict with it.
+  #
+  # Match the real ELF only: meson also emits libfprint-2.so.2.0.0.symbols alongside it, and
+  # picking that up would ship a dangling symlink with no library — ldconfig would then
+  # silently fall back to the stock (SDCP-less) libfprint and fingerprint would just stop,
+  # with nothing obviously broken.
+  local _so
+  _so=$(find build -type f -name 'libfprint-2.so.2.[0-9]*' ! -name '*.symbols' | head -1)
+  [ -n "$_so" ] || { echo "FATAL: built libfprint-2.so.2.x not found"; return 1; }
+  install -Dm755 "$_so" "$pkgdir/usr/lib/honor-fmbp/$(basename "$_so")"
+  ln -s "$(basename "$_so")" "$pkgdir/usr/lib/honor-fmbp/libfprint-2.so.2"
+
+  install -Dm644 /dev/stdin "$pkgdir/etc/ld.so.conf.d/000-honor-fmbp-fprint.conf" <<'EOF'
+# honor-fmbp-libfprint-sdcp: SDCP-capable libfprint for the EgisTec ET171 fingerprint reader.
+# The 000- prefix sorts this ahead of the default library paths, so this libfprint-2.so.2 wins
+# over the stock (SDCP-less) one for fprintd.
+/usr/lib/honor-fmbp
+EOF
+
+  install -Dm644 "$srcdir/libfprint/COPYING" "$pkgdir/usr/share/licenses/$pkgname/COPYING" 2>/dev/null || true
+}

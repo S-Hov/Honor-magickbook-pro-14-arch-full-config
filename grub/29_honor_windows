@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# Discover a mounted Windows EFI loader without embedding this laptop's UUID.
+set -euo pipefail
+for esp in /boot/efi /efi /boot; do
+    [[ -f "$esp/EFI/Microsoft/Boot/bootmgfw.efi" ]] || continue
+    [[ $(findmnt -n -o FSTYPE --target "$esp") == vfat ]] || continue
+    uuid=$(findmnt -n -o UUID --target "$esp")
+    [[ "$uuid" =~ ^[A-Fa-f0-9-]+$ ]] || { echo 'Windows ESP UUID not found' >&2; exit 1; }
+    cat <<EOF
+menuentry 'Windows Boot Manager' --class windows --class os --id windows-honor {
+    insmod part_gpt
+    insmod fat
+    insmod chain
+    search --no-floppy --fs-uuid --set=root $uuid
+    chainloader /EFI/Microsoft/Boot/bootmgfw.efi
+}
+EOF
+    exit 0
+done

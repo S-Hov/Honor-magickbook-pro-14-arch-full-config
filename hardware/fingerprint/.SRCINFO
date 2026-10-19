@@ -1,0 +1,35 @@
+pkgbase = honor-fmbp-libfprint-sdcp
+	pkgdesc = SDCP-capable libfprint for the HONOR FMB-P EgisTec ET171 (1c7a:05aa), in a private libdir
+	pkgver = 1.94.10+sdcpv2
+	pkgrel = 2
+	url = https://github.com/drphilth/honor-fmbp-libfprint-sdcp
+	install = honor-fmbp-libfprint-sdcp.install
+	arch = x86_64
+	license = LGPL-2.1-or-later
+	makedepends = meson
+	makedepends = ninja
+	makedepends = pkgconf
+	makedepends = glib2-devel
+	makedepends = git
+	depends = glib2
+	depends = libgusb
+	depends = openssl
+	optdepends = fprintd: PAM/D-Bus fingerprint service — KDE uses it for lock-screen unlock
+	source = libfprint::git+https://gitlab.freedesktop.org/libfprint/libfprint.git#commit=2d7c5277de08c6b29b3fac7447f17a516fbc4d1c
+	source = 0001-egismoc-add-EgisTec-ET171-1c7a-05aa-support.patch
+	source = 0002-sdcp-mark-identified-print-as-device-stored.patch
+	source = 0003-egismoc-guard-against-short-interrupt-packets-and-fi.patch
+	source = 0004-sdcp-fix-intermittent-open-hang-on-short-host-privat.patch
+	source = 0005-egismoc-fail-the-task-SSM-on-identify-and-finger-wai.patch
+	source = 0006-egismoc-bounds-check-the-SDCP-ConnectResponse-agains.patch
+	source = 0100-skip-unshipped-tests-examples.patch
+	sha256sums = SKIP
+	sha256sums = 725765d34caba5d18fb3eb2c7c4491b5480de85affc82fa9a34acc6102e1761e
+	sha256sums = adbef414f1594709c0e84eee6b3d297ea30159ba75c6abb42bdb8904a840fead
+	sha256sums = 3b7914cb23673c36098f7c6c4951a5a823e783632c23c9fe393250a7a701a2d5
+	sha256sums = e5b2f97beffde25068a40e35753ee1e3e47706ed2fcd37199493878cfd5178e5
+	sha256sums = 8e835a0cb65334db7f6812ee7adae4c427badeeb4a76bf244581a11456ed08d1
+	sha256sums = ba5ad1eebddd197c9bc17b5ae6565518788fa0190aa7824bd2b952a101723942
+	sha256sums = 81fe90c7dd03c78e8b2cee1ebf87c6326f573d60bb2df20af0cc32c14c9f3174
+
+pkgname = honor-fmbp-libfprint-sdcp

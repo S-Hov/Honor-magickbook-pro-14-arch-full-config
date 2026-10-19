@@ -1,0 +1,26 @@
+Description: Skip building the unshipped test and example executables
+ This package ships ONLY the private-dir libfprint-2 runtime library for the
+ egismoc driver. Upstream's meson builds the test and example programs
+ unconditionally (no option gates subdir('tests')/subdir('examples')), which
+ needlessly compiles and LTO-links a stack of executables we never install —
+ wasting build time/memory on the Launchpad builders. Drop those subdirs so the
+ build graph contains only the library we ship.
+ .
+ Debian-packaging change only; NOT part of the upstream (MR 547) patch series.
+Author: Philip Walsh <packages@drphilth.com>
+Forwarded: not-needed
+Last-Update: 2026-07-07
+--- a/meson.build
++++ b/meson.build
+@@ -367,9 +367,8 @@
+ endif
+ 
+ subdir('data')
+-subdir('tests')
+-
+-subdir('examples')
++# Debian packaging (honor-fmbp-libfprint-sdcp): ship ONLY the egismoc runtime
++# library; skip building the unshipped test/example executables.
+ 
+ pkgconfig = import('pkgconfig')
+ pkgconfig.generate(

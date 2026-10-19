@@ -1,0 +1,34 @@
+# Editors and IDEs
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Temporary and backup files
+*.bak
+*.old
+*.orig
+*.tmp
+*.temp
+*.log
+
+# OS metadata
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Local environment files and secrets
+.env
+.env.*
+!.env.example
+
+# Runtime caches that do not belong in dotfiles
+__pycache__/
+*.py[cod]
+.cache/
+
+# Local export artifacts and runtime state
+*.tar.gz
+*.sha256
+.backups/

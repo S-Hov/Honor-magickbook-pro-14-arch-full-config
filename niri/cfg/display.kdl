@@ -1,0 +1,6 @@
+// HONOR ZQC-P: native panel, 120 Hz, 200% scale.
+output "eDP-1" {
+    mode "3120x2080@120.000"
+    scale 2
+    focus-at-startup
+}

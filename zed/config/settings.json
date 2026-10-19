@@ -1,0 +1,275 @@
+{
+  "diff_view_style": "split",
+  "base_keymap": "VSCode",
+  "use_key_equivalents": true,
+  "theme": {
+    "mode": "dark",
+    "light": "VSCode Dark Modern",
+    "dark": "VSCode Dark Modern"
+  },
+  "icon_theme": {
+    "mode": "dark",
+    "light": "Material Icon Theme",
+    "dark": "Material Icon Theme"
+  },
+  "ui_font_size": 16,
+  "buffer_font_family": "JetBrainsMono Nerd Font Mono",
+  "buffer_font_size": 15,
+  "buffer_line_height": "comfortable",
+  "terminal": {
+    "dock": "bottom",
+    "shell": {
+      "program": "/usr/bin/fish"
+    },
+    "working_directory": "current_project_directory",
+    "font_family": "JetBrainsMono Nerd Font Mono",
+    "font_size": 14,
+    "toolbar": {
+      "breadcrumbs": true
+    }
+  },
+  "project_panel": {
+    "dock": "left",
+    "default_width": 280,
+    "entry_spacing": "standard",
+    "file_icons": true,
+    "folder_indicator": "icon",
+    "git_status": true,
+    "auto_reveal_entries": true,
+    "auto_fold_dirs": false,
+    "bold_folder_labels": false,
+    "sticky_scroll": true,
+    "show_diagnostics": "all",
+    "indent_guides": {
+      "show": "always"
+    },
+    "sort_mode": "directories_first",
+    "starts_open": true
+  },
+  "git_panel": {
+    "button": true,
+    "dock": "left",
+    "default_width": 360,
+    "status_style": "label_color",
+    "file_icons": true,
+    "folder_indicator": "both",
+    "sort_by": "path",
+    "group_by": "staging",
+    "tree_view": true,
+    "diff_stats": true,
+    "show_count_badge": true,
+    "collapse_untracked_diff": true,
+    "starts_open": false,
+    "commit_title_max_length": 72,
+    "entry_primary_click_action": "file_diff",
+    "scrollbar": {
+      "show": "auto"
+    }
+  },
+  "git": {
+    "git_gutter": "tracked_files",
+    "gutter_debounce": 100,
+    "hunk_style": "staged_hollow",
+    "inline_blame": {
+      "enabled": false
+    },
+    "branch_picker": {
+      "show_author_name": true
+    }
+  },
+  "outline_panel": {
+    "dock": "left",
+    "default_width": 300,
+    "file_icons": true
+  },
+  "debugger": {
+    "dock": "bottom",
+    "button": true
+  },
+  "bottom_dock_layout": "full",
+  "tab_bar": {
+    "show": true,
+    "show_nav_history_buttons": true,
+    "show_tab_bar_buttons": true
+  },
+  "title_bar": {
+    "show_branch_name": true,
+    "show_branch_status_icon": true,
+    "show_worktree_name": true,
+    "show_project_items": true
+  },
+  "tabs": {
+    "close_position": "right",
+    "file_icons": true,
+    "git_status": true,
+    "activate_on_close": "history",
+    "show_close_button": "hover",
+    "show_diagnostics": "all"
+  },
+  "toolbar": {
+    "breadcrumbs": true,
+    "quick_actions": true,
+    "selections_menu": true,
+    "agent_review": true,
+    "code_actions": true
+  },
+  "minimap": {
+    "show": "always",
+    "thumb": "always",
+    "current_line_highlight": "line"
+  },
+  "scrollbar": {
+    "show": "auto",
+    "cursors": true,
+    "git_diff": true,
+    "search_results": true,
+    "selected_text": true,
+    "selected_symbol": true,
+    "diagnostics": "all",
+    "axes": {
+      "horizontal": true,
+      "vertical": true
+    }
+  },
+  "gutter": {
+    "line_numbers": true,
+    "runnables": true,
+    "breakpoints": true,
+    "folds": true
+  },
+  "indent_guides": {
+    "enabled": true,
+    "line_width": 1,
+    "active_line_width": 1,
+    "coloring": "indent_aware",
+    "background_coloring": "disabled"
+  },
+  "current_line_highlight": "all",
+  "selection_highlight": true,
+  "hover_popover_enabled": true,
+  "hover_popover_delay": 250,
+  "hover_popover_sticky": true,
+  "hover_popover_hiding_delay": 300,
+  "colorize_brackets": true,
+  "sticky_scroll": {
+    "enabled": true
+  },
+  "inlay_hints": {
+    "enabled": true,
+    "show_type_hints": true,
+    "show_parameter_hints": true,
+    "show_other_hints": true
+  },
+  "semantic_tokens": "combined",
+  "autosave": {
+    "after_delay": {
+      "milliseconds": 1000
+    }
+  },
+  "format_on_save": "on",
+  "formatter": "auto",
+  "ensure_final_newline_on_save": true,
+  "remove_trailing_whitespace_on_save": true,
+  "file_scan_exclusions": [
+    "**/node_modules",
+    "**/.next",
+    "**/dist",
+    "**/build",
+    "**/coverage",
+    "..."
+  ],
+  "languages": {
+    "JavaScript": {
+      "tab_size": 2,
+      "format_on_save": "on",
+      "formatter": "auto",
+      "code_actions_on_format": {
+        "source.fixAll.eslint": true
+      }
+    },
+    "JSX": {
+      "tab_size": 2,
+      "format_on_save": "on",
+      "formatter": "auto",
+      "code_actions_on_format": {
+        "source.fixAll.eslint": true
+      }
+    },
+    "TypeScript": {
+      "tab_size": 2,
+      "format_on_save": "on",
+      "formatter": "auto",
+      "code_actions_on_format": {
+        "source.fixAll.eslint": true
+      }
+    },
+    "TSX": {
+      "tab_size": 2,
+      "format_on_save": "on",
+      "formatter": "auto",
+      "code_actions_on_format": {
+        "source.fixAll.eslint": true
+      }
+    },
+    "JSON": {
+      "tab_size": 2,
+      "format_on_save": "on"
+    },
+    "HTML": {
+      "tab_size": 2,
+      "format_on_save": "on"
+    },
+    "CSS": {
+      "tab_size": 2,
+      "format_on_save": "on"
+    }
+  },
+  "lsp": {
+    "codebook": {
+      "initialization_options": {
+        "globalConfigPath": "~/.config/codebook/codebook.toml",
+        "checkWhileTyping": true,
+        "diagnosticSeverity": "warning",
+        "logLevel": "info"
+      }
+    },
+    "eslint": {
+      "settings": {
+        "workingDirectory": {
+          "mode": "auto"
+        },
+        "problems": {
+          "shortenToSingleLine": true
+        }
+      }
+    },
+    "tailwindcss-language-server": {
+      "settings": {
+        "tailwindCSS": {
+          "emmetCompletions": true
+        },
+        "classFunctions": [
+          "clsx",
+          "cn",
+          "cva",
+          "cx"
+        ]
+      }
+    }
+  },
+  "auto_install_extensions": {
+    "html": true,
+    "emmet": true,
+    "dockerfile": true,
+    "scss": true,
+    "prisma": true,
+    "biome": true,
+    "codebook": true,
+    "material-icon-theme": true,
+    "vscode-dark-modern": true
+  },
+  "edit_predictions": {
+    "provider": "none"
+  },
+  "disable_ai": true
+}

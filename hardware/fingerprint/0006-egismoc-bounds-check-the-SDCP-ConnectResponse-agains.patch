@@ -1,0 +1,53 @@
+From 49ee8039315aa35e48183e2f00be2c7a1e8a1ea6 Mon Sep 17 00:00:00 2001
+From: Philip Walsh <packages@drphilth.com>
+Date: Wed, 7 Oct 2026 15:47:03 +0100
+Subject: [PATCH 6/6] egismoc: bounds-check the SDCP ConnectResponse against
+ cert_m length
+
+egismoc_connect_cb() reads the cert_m length from two bytes of the
+device's ConnectResponse and then slices cert_m and the fixed-size
+fields that follow (pk_d, pk_f, h_f, s_m, s_d, m) without checking that
+they fit in the received buffer. The up-front minimum-length check
+covers neither the response prefix nor cert_m itself, so a truncated or
+malformed response (or a bogus length) led to an out-of-bounds read.
+Fail the connect with FP_DEVICE_ERROR_DATA_INVALID instead.
+
+The existing minimum-length check already guarantees that the two
+length bytes themselves are in bounds.
+---
+ libfprint/drivers/egismoc/egismoc.c | 19 +++++++++++++++++++
+ 1 file changed, 19 insertions(+)
+
+diff --git a/libfprint/drivers/egismoc/egismoc.c b/libfprint/drivers/egismoc/egismoc.c
+index b6d79a97..580a5e3e 100644
+--- a/libfprint/drivers/egismoc/egismoc.c
++++ b/libfprint/drivers/egismoc/egismoc.c
+@@ -1541,6 +1541,25 @@ egismoc_connect_cb (FpDevice *device,
+   model_certificate_len = buffer_in[pos] << 8 | buffer_in[pos + 1];
+   pos += 2;
+ 
++  /* cert_m's length comes from the device; make sure it and every fixed-size
++   * part after it fit in what was actually received */
++  if (length_in < pos
++      + model_certificate_len
++      + SDCP_PUBLIC_KEY_SIZE
++      + SDCP_PUBLIC_KEY_SIZE
++      + SDCP_MAC_SIZE
++      + SDCP_SIGNATURE_SIZE
++      + SDCP_SIGNATURE_SIZE
++      + SDCP_MAC_SIZE)
++    {
++      fpi_sdcp_device_connect_complete (sdcp_device, NULL, NULL, NULL,
++                                        fpi_device_error_new_msg (FP_DEVICE_ERROR_DATA_INVALID,
++                                                                  "Device SDCP ConnectResponse "
++                                                                  "is shorter than its cert_m "
++                                                                  "length implies"));
++      return;
++    }
++
+   /* cert_m bytes based on length fetched above */
+   claim->model_certificate = g_bytes_new (buffer_in + pos, model_certificate_len);
+   pos += model_certificate_len;
+-- 
+2.56.0
+

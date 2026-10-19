@@ -1,0 +1,30 @@
+[
+  {
+    "context": "Editor && mode == full",
+    "bindings": {
+      "ctrl-k": "editor::SelectLine",
+      "alt-shift-up": "editor::DuplicateLineUp",
+      "alt-shift-down": "editor::DuplicateLineDown"
+    }
+  },
+  {
+    "context": "Workspace",
+    "bindings": {
+      "ctrl-shift-g": "git_panel::ToggleFocus",
+      "ctrl-alt-g": "git_graph::Open",
+      "ctrl-alt-t": [
+        "task::Spawn",
+        {
+          "task_name": "Открыть Kitty в проекте"
+        }
+      ]
+    }
+  },
+  {
+    "context": "GitPanel",
+    "bindings": {
+      "ctrl-1": "git_panel::ActivateChangesTab",
+      "ctrl-2": "git_panel::ActivateHistoryTab"
+    }
+  }
+]

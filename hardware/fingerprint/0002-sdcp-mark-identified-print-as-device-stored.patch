@@ -1,0 +1,41 @@
+From edc5915cc27e1a7e34e22f379ab108ac332db195 Mon Sep 17 00:00:00 2001
+From: Philip Walsh <packages@drphilth.com>
+Date: Fri, 3 Jul 2026 09:00:07 +0100
+Subject: [PATCH 2/3] sdcp: mark identified print as device-stored
+
+fpi_sdcp_device_identify_complete() created the identified print with
+device_stored = FALSE (comment copied from the enroll path). fprintd
+rejects a matched print from a device-storage sensor that is not marked
+as stored:
+
+  fprintd-CRITICAL: libfprint driver bug: Returned device print not
+  marked as stored on device.
+
+turning every successful match into verify-unknown-error. The device
+identified against one of its stored templates, so the print is by
+definition device-stored.
+---
+ libfprint/fpi-sdcp-device.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/libfprint/fpi-sdcp-device.c b/libfprint/fpi-sdcp-device.c
+index 82384dc..37c8566 100644
+--- a/libfprint/fpi-sdcp-device.c
++++ b/libfprint/fpi-sdcp-device.c
+@@ -865,8 +865,11 @@ fpi_sdcp_device_identify_complete (FpSdcpDevice *self,
+ 
+   fpi_print_set_type (identified_print, FPI_PRINT_SDCP);
+ 
+-  /* Set to true once committed */
+-  fpi_print_set_device_stored (identified_print, FALSE);
++  /*
++   * The device identified against one of its stored templates, so the
++   * resulting print is by definition stored on the device.
++   */
++  fpi_print_set_device_stored (identified_print, TRUE);
+ 
+   /* Attach the ID to the print */
+   fpi_sdcp_device_set_print_id (identified_print, id);
+-- 
+2.53.0
+

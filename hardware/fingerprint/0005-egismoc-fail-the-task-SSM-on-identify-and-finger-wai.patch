@@ -1,0 +1,117 @@
+From ded6b353f40942eb5c501c4bdec2e696e63a58a5 Mon Sep 17 00:00:00 2001
+From: Philip Walsh <packages@drphilth.com>
+Date: Wed, 7 Oct 2026 15:46:52 +0100
+Subject: [PATCH 5/6] egismoc: fail the task SSM on identify and finger-wait
+ errors
+
+egismoc_wait_finger_ssm_done(), egismoc_identify_check_cb() and
+egismoc_identify_complete_cb() completed the action directly with
+fpi_device_action_error() but never finished the identify task_ssm, so
+it was left dangling after e.g. a 10 s finger-wait timeout during
+verify. The following close then ran egismoc_cancel(), which found the
+stale task_ssm and failed it, completing the close action twice: the
+first completion returned a bogus "Operation was cancelled" to
+ReleaseDevice and the second hit
+
+  g_task_return_error: assertion 'G_IS_TASK (task)' failed
+
+Reproducible on the ET171 (1c7a:05aa) with fprintd-verify and no finger
+on the sensor. Route these errors through fpi_ssm_mark_failed() on the
+task SSM instead, as the other callbacks already do, and let the SSM own
+the IdentifyPrint so it is no longer leaked on early failures. The
+cancellation error that was previously leaked is now freed.
+---
+ libfprint/drivers/egismoc/egismoc.c | 44 +++++++++++++++++++++--------
+ 1 file changed, 33 insertions(+), 11 deletions(-)
+
+diff --git a/libfprint/drivers/egismoc/egismoc.c b/libfprint/drivers/egismoc/egismoc.c
+index 3ef23bc7..b6d79a97 100644
+--- a/libfprint/drivers/egismoc/egismoc.c
++++ b/libfprint/drivers/egismoc/egismoc.c
+@@ -85,6 +85,15 @@ typedef struct egismoc_identify_print
+   GError *error;
+ } IdentifyPrint;
+ 
++static void
++identify_print_free (IdentifyPrint *identify_print)
++{
++  g_clear_pointer (&identify_print->id, g_bytes_unref);
++  g_clear_pointer (&identify_print->mac, g_bytes_unref);
++  g_clear_error (&identify_print->error);
++  g_free (identify_print);
++}
++
+ static gboolean
+ egismoc_validate_response_prefix (const guchar *buffer_in,
+                                   const gsize   buffer_in_len,
+@@ -364,7 +373,23 @@ egismoc_wait_finger_ssm_done (FpiSsm   *ssm,
+   self->wait_finger_ssm = NULL;
+   self->wait_finger_start = 0;
+ 
+-  if (error && g_strcmp0 (error->message, "Operation was cancelled") != 0)
++  if (!error)
++    return;
++
++  if (g_strcmp0 (error->message, "Operation was cancelled") == 0)
++    {
++      /* egismoc_cancel() has already failed the task SSM */
++      g_error_free (error);
++      return;
++    }
++
++  /* Fail the task SSM (e.g. a finger-wait timeout) rather than the action
++   * directly: completing the action alone leaves task_ssm dangling, and
++   * egismoc_cancel() on the following close then completes that close a
++   * second time with "Operation was cancelled". */
++  if (self->task_ssm)
++    fpi_ssm_mark_failed (self->task_ssm, error);
++  else
+     fpi_device_action_error (device, error);
+ }
+ 
+@@ -1302,19 +1327,15 @@ egismoc_identify_complete_cb (FpDevice *device,
+ 
+   if (error)
+     {
+-      fpi_device_action_error (device, error);
+-      goto out;
++      fpi_ssm_mark_failed (self->task_ssm, error);
++      return;
+     }
+ 
+   fpi_sdcp_device_identify_complete (sdcp_device, identify_print->id, identify_print->mac,
+-                                     identify_print->error);
++                                     g_steal_pointer (&identify_print->error));
+ 
++  /* identify_print is freed with the SSM */
+   fpi_ssm_next_state (self->task_ssm);
+-
+-out:
+-  g_clear_pointer (&identify_print->id, g_bytes_unref);
+-  g_clear_pointer (&identify_print->mac, g_bytes_unref);
+-  g_clear_pointer (&identify_print, g_free);
+ }
+ 
+ static void
+@@ -1335,7 +1356,7 @@ egismoc_identify_check_cb (FpDevice *device,
+ 
+   if (error)
+     {
+-      fpi_device_action_error (device, error);
++      fpi_ssm_mark_failed (self->task_ssm, error);
+       return;
+     }
+ 
+@@ -1445,7 +1466,8 @@ egismoc_identify (FpSdcpDevice *sdcp_device)
+   self->task_ssm = fpi_ssm_new (FP_DEVICE (sdcp_device),
+                                 egismoc_identify_run_state,
+                                 IDENTIFY_STATES);
+-  fpi_ssm_set_data (self->task_ssm, g_steal_pointer (&identify_print), NULL);
++  fpi_ssm_set_data (self->task_ssm, g_steal_pointer (&identify_print),
++                    (GDestroyNotify) identify_print_free);
+   fpi_ssm_start (self->task_ssm, egismoc_task_ssm_done);
+ }
+ 
+-- 
+2.56.0
+

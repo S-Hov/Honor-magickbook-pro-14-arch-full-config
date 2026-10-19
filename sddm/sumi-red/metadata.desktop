@@ -1,0 +1,15 @@
+[SddmGreeterTheme]
+Name=Sumi Red
+Description=Sumi Red for HONOR Niri desktop
+Author=keyitdev
+Website=https://github.com/Keyitdev/sddm-astronaut-theme
+License=GPL-3.0-or-later
+Type=sddm-theme
+Version=1.4
+ConfigFile=theme.conf
+Screenshot=background.png
+MainScript=Main.qml
+TranslationsDirectory=translations
+Theme-Id=sumi-red
+Theme-API=2.0
+QtVersion=6

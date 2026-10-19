@@ -1,0 +1,17 @@
+# Local, code-aware spell checking for both languages used in Antigravity.
+dictionaries = ["en_us", "ru"]
+words = [
+  "TypeScript",
+  "JavaScript",
+  "Nodejs",
+  "Nextjs",
+  "Nestjs",
+  "Reactjs",
+  "Tailwind",
+  "Vite",
+  "Vitest",
+  "Biome",
+  "Prisma",
+  "Dockerfile",
+  "PostgreSQL"
+]

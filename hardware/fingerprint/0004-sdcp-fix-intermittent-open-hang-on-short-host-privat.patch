@@ -1,0 +1,103 @@
+From d7dc28e2ab326dac51440239582f9f7e1fc9362c Mon Sep 17 00:00:00 2001
+From: Philip Walsh <packages@drphilth.com>
+Date: Wed, 7 Oct 2026 15:46:07 +0100
+Subject: [PATCH 4/6] sdcp: fix intermittent open hang on short host private
+ keys
+
+fpi_sdcp_get_private_key() required BN_num_bytes() of the generated
+P-256 scalar to equal SDCP_PRIVATE_KEY_SIZE. BN_num_bytes() drops
+leading zero bytes, so about 1 key in 256 is reported as 31 bytes and
+host key generation fails ("OpenSSL error getting private key bytes").
+Left-pad with BN_bn2binpad() instead, and only reject oversized keys.
+
+That failure then hung the open outright: fpi_sdcp_device_connect()
+reports it via fpi_sdcp_device_connect_complete(), which checked
+g_return_if_fail (priv->host_private_key) before its error branch, so
+it returned without ever completing the open. fprintd kept the device
+claimed and later clients got "Device was already claimed" until the
+daemon was restarted. Handle the error first, and turn missing host key
+material into an open error rather than a silent return.
+
+Also fail cleanly if EVP_EC_gen() itself returns NULL.
+
+Observed on the ET171 (1c7a:05aa) as:
+  fpi_sdcp_device_connect_complete: assertion 'priv->host_private_key' failed
+---
+ libfprint/fpi-sdcp-device.c | 14 ++++++++++++--
+ libfprint/fpi-sdcp.c        | 17 ++++++++++++++---
+ 2 files changed, 26 insertions(+), 5 deletions(-)
+
+diff --git a/libfprint/fpi-sdcp-device.c b/libfprint/fpi-sdcp-device.c
+index 37c85666..ade54b38 100644
+--- a/libfprint/fpi-sdcp-device.c
++++ b/libfprint/fpi-sdcp-device.c
+@@ -494,9 +494,10 @@ fpi_sdcp_device_connect_complete (FpSdcpDevice *self,
+   action = fpi_device_get_current_action (FP_DEVICE (self));
+ 
+   g_return_if_fail (action == FPI_DEVICE_ACTION_OPEN);
+-  g_return_if_fail (priv->host_private_key);
+-  g_return_if_fail (priv->host_random);
+ 
++  /* Handle errors before checking the host key: fpi_sdcp_device_connect()
++   * reports a failed key generation through here, and returning early
++   * without completing the open would leave the device claimed forever. */
+   if (error)
+     {
+       if (device_random || claim || mac)
+@@ -511,6 +512,15 @@ fpi_sdcp_device_connect_complete (FpSdcpDevice *self,
+       return;
+     }
+ 
++  if (!priv->host_private_key || !priv->host_random)
++    {
++      fpi_device_open_complete (FP_DEVICE (self),
++                                fpi_device_error_new_msg (FP_DEVICE_ERROR_GENERAL,
++                                                          "SDCP Connect completed without "
++                                                          "host key material"));
++      return;
++    }
++
+   if (!device_random || !claim || !mac ||
+       (!claim->model_certificate || !claim->device_public_key || !claim->firmware_public_key ||
+        !claim->firmware_hash || !claim->model_signature || !claim->device_signature))
+diff --git a/libfprint/fpi-sdcp.c b/libfprint/fpi-sdcp.c
+index c02a2f55..dfec6bb3 100644
+--- a/libfprint/fpi-sdcp.c
++++ b/libfprint/fpi-sdcp.c
+@@ -432,12 +432,15 @@ fpi_sdcp_get_private_key (EVP_PKEY *pkey,
+   if (!EVP_PKEY_get_bn_param (pkey, OSSL_PKEY_PARAM_PRIV_KEY, &priv_bn))
+     goto out_error;
+ 
+-  priv_len = BN_num_bytes (priv_bn);
+-  if (priv_len != SDCP_PRIVATE_KEY_SIZE)
++  /* BN_num_bytes() drops leading zero bytes, so a valid P-256 scalar is
++   * shorter than SDCP_PRIVATE_KEY_SIZE about 1 time in 256; only reject keys
++   * that are too long and left-pad the rest to the fixed size. */
++  if (BN_num_bytes (priv_bn) > SDCP_PRIVATE_KEY_SIZE)
+     goto out_error;
+ 
++  priv_len = SDCP_PRIVATE_KEY_SIZE;
+   priv = g_malloc0 (priv_len);
+-  if (!BN_bn2bin (priv_bn, priv))
++  if (BN_bn2binpad (priv_bn, priv, priv_len) != priv_len)
+     goto out_error;
+ 
+   BN_clear_free (priv_bn);
+@@ -732,6 +735,14 @@ fpi_sdcp_generate_host_key (GBytes **private_key,
+ {
+   EVP_PKEY *key = EVP_EC_gen ("P-256");
+ 
++  if (!key)
++    {
++      g_propagate_error (error, fpi_device_error_new_msg (FP_DEVICE_ERROR_UNTRUSTED,
++                                                          "OpenSSL error generating host key"));
++      print_openssl_errors ();
++      return;
++    }
++
+   if (*private_key)
+     g_bytes_unref (*private_key);
+   *private_key = fpi_sdcp_get_private_key (key, error);
+-- 
+2.56.0
+

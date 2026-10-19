@@ -1,0 +1,3 @@
+# FocalTech touchscreen's separate UNKNOWN collection exposes only a phantom
+# KEY_MICMUTE (248), held/repeated continuously. Keep the real touchscreen intact.
+SUBSYSTEM=="input", KERNEL=="event*", ATTRS{name}=="FTSC1000:00 2808:5662 UNKNOWN", ENV{LIBINPUT_IGNORE_DEVICE}="1"

@@ -1,0 +1,33 @@
+// Ввод и раскладки / Input and keyboard layouts
+gestures {
+   hot-corners {
+	   off
+   }
+}
+
+input {
+    keyboard {
+        xkb {
+            // English + русская фонетическая
+            layout "us,ru"
+            variant ",phonetic"
+        }
+        numlock
+        repeat-delay 300
+        repeat-rate 35
+    }
+
+    touchpad {
+        tap
+        dwt
+        natural-scroll
+    }
+
+    mouse {
+        accel-profile "flat"
+        accel-speed 0.0
+    }
+
+    // Фокус меняется только кликом или клавишами / No focus-follows-mouse
+    workspace-auto-back-and-forth
+}
