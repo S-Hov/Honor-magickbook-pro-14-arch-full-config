@@ -66,3 +66,9 @@ playerctl
 
 less
 v4l-utils
+
+hunspell
+
+hunspell-ru
+
+hunspell-en_us

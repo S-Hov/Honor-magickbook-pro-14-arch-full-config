@@ -14,6 +14,8 @@ TARGETS.update({'zed/config': CONFIG/'zed', 'zed/codebook': CONFIG/'codebook',
                'wallpapers': HOME/'Pictures/wallpapers', 'color-schemes': DATA/'color-schemes',
                'codex/themes': Path(os.environ.get('CODEX_HOME', HOME/'.codex'))/'themes',
                'brave-flags.conf': CONFIG/'brave-flags.conf',
+               'spellcheck/chatgpt': HOME/'.local/bin/chatgpt',
+               'spellcheck/chatgpt.desktop': DATA/'applications/chatgpt.desktop',
                'noctalia-state/settings.toml': STATE/'noctalia/settings.toml'})
 
 def render(source, target):

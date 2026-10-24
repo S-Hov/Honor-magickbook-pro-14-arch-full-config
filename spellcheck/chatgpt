@@ -1,0 +1,74 @@
+#!/usr/bin/env python3
+"""Keep English + Russian spellcheck enabled in this Electron app's profiles."""
+from pathlib import Path
+import base64, datetime, hashlib, json, os, shutil, sys, urllib.request
+
+HOME = Path.home()
+CONFIG = Path(os.environ.get('XDG_CONFIG_HOME', HOME / '.config'))
+DATA = Path(os.environ.get('XDG_DATA_HOME', HOME / '.local/share'))
+STATE = Path(os.environ.get('XDG_STATE_HOME', HOME / '.local/state'))
+PROFILE = CONFIG / 'Codex'
+DICT = 'ru-RU-3-0.bdic'
+SHA256 = '92dcc64fb0b0c065b443abf9de6fb58116b2a64c49427d3715fa7536ad1c53b8'
+URL = 'https://chromium.googlesource.com/chromium/deps/hunspell_dictionaries/+/refs/heads/main/' + DICT + '?format=TEXT'
+
+
+def prepare():
+    cache = DATA / 'honor-spellcheck' / DICT
+    if not cache.exists():
+        with urllib.request.urlopen(URL, timeout=15) as response:
+            content = base64.b64decode(response.read())
+        if not content.startswith(b'BDic') or hashlib.sha256(content).hexdigest() != SHA256:
+            raise ValueError('Checksum of Russian Chromium dictionary does not match')
+        cache.parent.mkdir(parents=True, exist_ok=True)
+        cache.write_bytes(content)
+    if hashlib.sha256(cache.read_bytes()).hexdigest() != SHA256:
+        raise ValueError('Cached Russian Chromium dictionary checksum mismatch')
+    dictionaries = PROFILE / 'Dictionaries'
+    dictionaries.mkdir(parents=True, exist_ok=True)
+    if not (dictionaries / DICT).exists():
+        shutil.copy2(cache, dictionaries / DICT)
+    backup = STATE / 'honor-spellcheck-backups' / datetime.datetime.now().strftime('%Y%m%d-%H%M%S-%f')
+    profiles = [PROFILE / 'Default/Preferences', PROFILE / 'Default/Partitions/codex-browser-app/Preferences',
+                PROFILE / 'codex-browser-app/Preferences']
+    for index, path in enumerate(profiles):
+        if not path.exists():
+            continue
+        settings = json.loads(path.read_text())
+        spellcheck = settings.setdefault('spellcheck', {})
+        languages = list(spellcheck.get('dictionaries', []))
+        for language in ('en-US', 'ru'):
+            if language not in languages:
+                languages.append(language)
+        if spellcheck.get('dictionaries') == languages and spellcheck.get('use_spelling_service') is False:
+            continue
+        backup.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(path, backup / f'preferences-{index}.json')
+        spellcheck['dictionaries'] = languages
+        spellcheck['use_spelling_service'] = False
+        temporary = path.with_name('Preferences.honor-new')
+        temporary.write_text(json.dumps(settings, ensure_ascii=False, separators=(',', ':')))
+        temporary.chmod(path.stat().st_mode & 0o777)
+        temporary.replace(path)
+    # Telegram uses raw Hunspell dictionaries, separate from Chromium's .bdic.
+    telegram = DATA / 'TelegramDesktop/tdata/dictionaries/ru_RU'
+    if (DATA / 'TelegramDesktop/tdata').exists():
+        telegram.mkdir(parents=True, exist_ok=True)
+        for extension in ('aff', 'dic'):
+            source = Path('/usr/share/hunspell') / ('ru_RU.' + extension)
+            target = telegram / source.name
+            if source.exists() and not target.exists():
+                shutil.copy2(source, target)
+
+
+if __name__ == '__main__':
+    try:
+        prepare()
+    except Exception as error:
+        print(f'Spellcheck setup: {error}', file=sys.stderr)
+        if sys.argv[1:] == ['--honor-prepare-spellcheck']:
+            raise SystemExit(1)
+    if sys.argv[1:] == ['--honor-prepare-spellcheck']:
+        print('English and Russian spelling configured; restart the app to activate.')
+    else:
+        os.execv('/usr/bin/chatgpt', ['/usr/bin/chatgpt', *sys.argv[1:]])

@@ -1,0 +1,2 @@
+#!/bin/sh
+exec "$HOME/.local/share/honor-dictation/venv/bin/python" "$HOME/.local/share/honor-dictation/dictation.py" "$@"

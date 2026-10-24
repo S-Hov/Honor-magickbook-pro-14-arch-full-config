@@ -1,0 +1,15 @@
+[Unit]
+Description=Local Russian voice input using Whisper on Intel NPU
+After=pipewire.service wireplumber.service
+
+[Service]
+Type=simple
+ExecStart=%h/.local/share/honor-dictation/venv/bin/python %h/.local/share/honor-dictation/dictation.py serve
+Environment=PYTHONUNBUFFERED=1
+UMask=0077
+Restart=on-failure
+RestartSec=3
+TimeoutStopSec=8
+
+[Install]
+WantedBy=default.target

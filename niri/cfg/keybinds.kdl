@@ -1,6 +1,10 @@
 // Единая схема: Mod фокус, Shift перенос, Ctrl служебное
 // Unified scheme: Mod focus, Shift move, Ctrl secondary action
 binds {
+    // Локальная диктовка на NPU: повторное нажатие завершает запись.
+    Mod+Ctrl+R repeat=false hotkey-overlay-title="Voice input / Голосовой ввод" { spawn "@@HOME@@/.local/bin/honor-dictation" "toggle"; }
+    Mod+Ctrl+Escape repeat=false hotkey-overlay-title="Cancel voice input / Отменить диктовку" { spawn "@@HOME@@/.local/bin/honor-dictation" "cancel"; }
+
     // Приложения / Applications
     Mod+Return hotkey-overlay-title="Terminal / Терминал: Kitty" { spawn "kitty"; }
     Mod+D hotkey-overlay-title="App launcher / Меню приложений" { spawn "noctalia" "msg" "panel-toggle" "launcher"; }
