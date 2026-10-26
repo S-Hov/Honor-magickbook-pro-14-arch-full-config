@@ -155,7 +155,7 @@
     "enabled": true
   },
   "inlay_hints": {
-    "enabled": true,
+    "enabled": false,
     "show_type_hints": true,
     "show_parameter_hints": true,
     "show_other_hints": true
@@ -254,6 +254,15 @@
           "cva",
           "cx"
         ]
+      }
+    },
+    "vtsls": {
+      "settings": {
+        "typescript": {
+          "preferences": {
+            "preferTypeOnlyAutoImports": true
+          }
+        }
       }
     }
   },
