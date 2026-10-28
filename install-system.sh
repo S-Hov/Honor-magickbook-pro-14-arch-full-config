@@ -5,7 +5,7 @@ with_acpi=0
 case "${1:-}" in
     '') ;;
     --acpi) with_acpi=1 ;;
-    --dry-run) echo 'Установка: GRUB CyberEXS, SDDM Sumi Red, NetworkManager, Bluetooth, PPD, ALSA. ACPI только с --acpi.'; exit 0 ;;
+    --dry-run) echo 'Установка: GRUB void-terminal, SDDM Sumi Red, NetworkManager, Bluetooth, PPD, ALSA. ACPI только с --acpi.'; exit 0 ;;
     *) echo 'Использование: sudo ./install-system.sh [--acpi]' >&2; exit 1 ;;
 esac
 (( EUID == 0 )) || { echo 'Нужен sudo.' >&2; exit 1; }
@@ -36,12 +36,12 @@ for file in "${paths[@]}"; do
 done
 printf '%s\n' "$backup" > /var/backups/arch-honor-config-last
 install -d -m755 /boot/grub/themes /usr/share/sddm/themes /etc/sddm.conf.d
-[[ ! -d /boot/grub/themes/CyberEXS ]] || cp -a /boot/grub/themes/CyberEXS "$backup/previous-CyberEXS"
+[[ ! -d /boot/grub/themes/void-terminal ]] || cp -a /boot/grub/themes/void-terminal "$backup/previous-void-terminal"
 [[ ! -d /usr/share/sddm/themes/sumi-red ]] || cp -a /usr/share/sddm/themes/sumi-red "$backup/previous-sumi-red"
-cp -a "$repo_dir/grub/CyberEXS" /boot/grub/themes/
+cp -a "$repo_dir/grub/void-terminal" /boot/grub/themes/
 cp -a "$repo_dir/sddm/sumi-red" /usr/share/sddm/themes/
-chown -R root:root /boot/grub/themes/CyberEXS /usr/share/sddm/themes/sumi-red
-chmod -R a+rX /boot/grub/themes/CyberEXS /usr/share/sddm/themes/sumi-red
+chown -R root:root /boot/grub/themes/void-terminal /usr/share/sddm/themes/sumi-red
+chmod -R a+rX /boot/grub/themes/void-terminal /usr/share/sddm/themes/sumi-red
 install -m644 "$repo_dir/sddm/90-sumi-red.conf" /etc/sddm.conf.d/90-sumi-red.conf
 if [[ -f /etc/default/grub && -f /boot/grub/grub.cfg ]]; then
     install -o root -g root -m755 "$repo_dir/grub/29_honor_windows" /etc/grub.d/29_honor_windows
@@ -49,14 +49,14 @@ if [[ -f /etc/default/grub && -f /boot/grub/grub.cfg ]]; then
 from pathlib import Path
 import re
 p=Path('/etc/default/grub');s=p.read_text()
-for key,val in {'GRUB_THEME':'"/boot/grub/themes/CyberEXS/theme.txt"','GRUB_GFXMODE':'"1920x1080,auto"','GRUB_TERMINAL_OUTPUT':'"gfxterm"','GRUB_DISABLE_BOOTNEXT':'true','GRUB_DISABLE_SUBMENU':'true'}.items():
+for key,val in {'GRUB_THEME':'"/boot/grub/themes/void-terminal/theme.txt"','GRUB_GFXMODE':'"1920x1080,auto"','GRUB_TERMINAL_OUTPUT':'"gfxterm"','GRUB_DISABLE_BOOTNEXT':'true','GRUB_DISABLE_SUBMENU':'true'}.items():
     line=key+'='+val
     if re.search(r'^'+key+'=',s,re.M):s=re.sub(r'^'+key+'=.*$',lambda m:line,s,flags=re.M)
     else:s+='\n'+line+'\n'
 p.write_text(s)
 PY
-    if grub-mkconfig -o /boot/grub/grub.cfg.honor-new && grub-script-check /boot/grub/grub.cfg.honor-new; then
-        mv /boot/grub/grub.cfg.honor-new /boot/grub/grub.cfg
+    if bash "$repo_dir/grub/void-terminal/install.sh"; then
+        : # Theme installer validates and atomically activates the new config.
     else
         cp -a "$backup/files/etc/default/grub" /etc/default/grub
         if [[ -e "$backup/files/etc/grub.d/29_honor_windows" ]]; then

@@ -1,0 +1,13 @@
+[Unit]
+Description=Switch to English when focusing Kitty in Niri
+PartOf=graphical-session.target
+After=graphical-session.target
+StartLimitIntervalSec=0
+
+[Service]
+ExecStart=/usr/bin/python3 %h/.local/lib/terminal-english.py
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=graphical-session.target

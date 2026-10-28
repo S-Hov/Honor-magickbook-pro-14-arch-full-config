@@ -16,6 +16,8 @@ TARGETS.update({'zed/config': CONFIG/'zed', 'zed/codebook': CONFIG/'codebook',
                'brave-flags.conf': CONFIG/'brave-flags.conf',
                'spellcheck/chatgpt': HOME/'.local/bin/chatgpt',
                'spellcheck/chatgpt.desktop': DATA/'applications/chatgpt.desktop',
+               'scripts/terminal-english.py': HOME/'.local/lib/terminal-english.py',
+               'systemd/user/terminal-english.service': CONFIG/'systemd/user/terminal-english.service',
                'noctalia-state/settings.toml': STATE/'noctalia/settings.toml'})
 
 def render(source, target):

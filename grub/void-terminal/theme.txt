@@ -1,0 +1,84 @@
+# Void Terminal — standard GRUB gfxmenu theme. No custom modules.
+# Reference mode: 1920x1080. Menu labels always come from grub.cfg.
+title-text: ""
+desktop-image: "background.png"
+desktop-image-scale-method: "stretch"
+desktop-color: "#000000"
+terminal-font: "Void Mono Regular 20"
+terminal-left: "18%"
+terminal-top: "23%"
+terminal-width: "64%"
+terminal-height: "54%"
+terminal-border: "0"
+
++ label {
+  left = 18%
+  top = 24%+7
+  width = 64%
+  align = "center"
+  font = "Void Mono Regular 16"
+  color = "#979da5"
+  text = "boot@localhost: ~"
+}
++ label {
+  left = 22%
+  top = 33%
+  width = 56%
+  font = "Void Mono Regular 20"
+  color = "#979da5"
+  text = "boot@localhost:~$ select --target"
+}
++ label {
+  left = 22%
+  top = 37%
+  width = 56%
+  font = "Void Mono Regular 16"
+  color = "#626870"
+  text = "Choose an operating system."
+}
++ boot_menu {
+  left = 22%
+  top = 43%
+  width = 56%
+  height = 23%
+  item_font = "Void Mono Regular 24"
+  selected_item_font = "Void Mono Regular 24"
+  item_color = "#979da5"
+  selected_item_color = "#e7e9ec"
+  item_height = 48
+  item_spacing = 10
+  item_padding = 16
+  icon_width = 32
+  icon_height = 32
+  item_icon_space = 18
+  selected_item_pixmap_style = "select_*.png"
+  scrollbar = false
+}
++ label {
+  left = 22%
+  top = 68%
+  width = 56%
+  font = "Void Mono Regular 16"
+  color = "#626870"
+  text = "[UP/DOWN] select   [ENTER] boot   [E] edit   [C] console"
+}
++ label {
+  id = "__timeout__"
+  left = 22%
+  top = 71%
+  width = 56%
+  font = "Void Mono Regular 16"
+  color = "#979da5"
+  text = "Starting selected system in %d s"
+}
++ progress_bar {
+  id = "__timeout__"
+  left = 22%
+  top = 75%
+  width = 56%
+  height = 2
+  show_text = false
+  fg_color = "#c9cfd5"
+  bg_color = "#23262b"
+  border_color = "#23262b"
+}

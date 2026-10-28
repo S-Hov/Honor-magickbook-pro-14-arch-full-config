@@ -13,5 +13,6 @@ if (( $# )); then echo 'Для ACPI используйте отдельно: sud
 sudo "$repo_dir/install-system.sh"
 systemctl --user daemon-reload
 systemctl --user enable --now pipewire.socket pipewire-pulse.socket wireplumber.service
+"$repo_dir/install-terminal-english.sh"
 "$repo_dir/verify.sh"
 echo 'Готово. Темы GRUB и SDDM применятся после перезагрузки.'
