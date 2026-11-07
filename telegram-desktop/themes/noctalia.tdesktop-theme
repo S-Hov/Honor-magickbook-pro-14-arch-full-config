@@ -22,15 +22,15 @@ historyOutIconFg: #d95757;
 historyIconFgInverted: #e6e0d9;
 
 msgServiceBg: #1a1c21;
-msgServiceBgSelected: #381417;
+msgServiceBgSelected: #341b1f;
 msgServiceFg: #e6e0d9;
 historyUnreadBarBg: #1a1c21; // Unread messages banner background
 historyUnreadBarFg: #e6e0d9; // Unread messages banner text
 historyUnreadBarBorder: #00000000; // Unread messages banner border
 botKbBg: #1a1c21; // Inline bot keyboard button background
-botKbDownBg: #381417; // Inline bot keyboard button pressed
+botKbDownBg: #341b1f; // Inline bot keyboard button pressed
 msgBotKbIconFg: #aaa39b; // Inline bot keyboard button icon
-msgOutBg: #381417;
+msgOutBg: #341b1f;
 msgOutBgSelected: #23262c;
 msgOutServiceFg: #e6e0d9;
 historyTextOutFg: #e6e0d9; // Outgoing bubble text
@@ -51,14 +51,14 @@ imageBg: #090a0d;
 imageBgTransparent: #090a0d;
 
 activeButtonBg: #d95757; // Active button background
-activeButtonBgOver: #6a1414; // Active button hover background
-activeButtonBgRipple: #f6d5d5; // Active button ripple
+activeButtonBgOver: #472123; // Active button hover background
+activeButtonBgRipple: #ed6967; // Active button ripple
 activeButtonFg: #0b0c0f; // Active button text
-activeButtonFgOver: #f6d5d5; // Active button hover text
+activeButtonFgOver: #ed6967; // Active button hover text
 activeButtonSecondaryFg: #0b0c0f; // Active button secondary text
-activeButtonSecondaryFgOver: #f6d5d5; // Active button secondary hover text
+activeButtonSecondaryFgOver: #ed6967; // Active button secondary hover text
 activeLineFg: #e6e0d9;
-dialogsBgActive: #381417;
+dialogsBgActive: #341b1f;
 dialogsNameFg: #e6e0d9; // Chat list name text
 dialogsNameFgActive: #e6e0d9; // Selected chat name text (same as bubble text)
 dialogsTextFgActive: #e6e0d9; // Selected chat preview text (same as bubble text)
@@ -83,8 +83,8 @@ lightButtonFgOver: #aaa39b; // Light button hover text
 
 attentionButtonFg: #ff707f;
 attentionButtonFgOver: #ff707f;
-attentionButtonBgOver: #bd0014;
-attentionButtonBgRipple: #ffccd1;
+attentionButtonBgOver: #52282f;
+attentionButtonBgRipple: #ff707f;
 
 outlineButtonBg: #090a0d; // Outline button background
 outlineButtonBgOver: #1a1c21; // Outline button hover background

@@ -28,7 +28,7 @@ end = [ "media", "tray", "notifications", "clipboard", "network", "bluetooth", "
 [[bar.default.capsule_group]]
 id = "cpu_group"
 members = [ "cpu_usage", "cpu_temp" ]
-fill = "surface_variant"
+fill = "surface_container"
 opacity = 1.0
 padding = 6.0
 enabled = true
@@ -36,7 +36,7 @@ enabled = true
 [[bar.default.capsule_group]]
 id = "gpu_group"
 members = [ "gpu_usage" ]
-fill = "surface_variant"
+fill = "surface_container"
 opacity = 1.0
 padding = 6.0
 enabled = true
@@ -44,7 +44,7 @@ enabled = true
 [[bar.default.capsule_group]]
 id = "ram_group"
 members = [ "ram_usage" ]
-fill = "surface_variant"
+fill = "surface_container"
 opacity = 1.0
 padding = 6.0
 enabled = true
@@ -52,7 +52,7 @@ enabled = true
 [[bar.default.capsule_group]]
 id = "disk_group"
 members = [ "disk_usage" ]
-fill = "surface_variant"
+fill = "surface_container"
 opacity = 1.0
 padding = 6.0
 enabled = true
@@ -60,7 +60,7 @@ enabled = true
 [[bar.default.capsule_group]]
 id = "net_group"
 members = [ "net_rx", "net_tx" ]
-fill = "surface_variant"
+fill = "surface_container"
 opacity = 1.0
 padding = 6.0
 enabled = true
@@ -68,7 +68,7 @@ enabled = true
 [[bar.default.capsule_group]]
 id = "workspaces_group"
 members = [ "workspaces" ]
-fill = "surface_variant"
+fill = "surface_container"
 opacity = 1.0
 padding = 6.0
 enabled = true

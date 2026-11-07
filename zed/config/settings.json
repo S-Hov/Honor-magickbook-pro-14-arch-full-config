@@ -1,4 +1,5 @@
 {
+  "cli_default_open_behavior": "existing_window",
   "diff_view_style": "split",
   "base_keymap": "VSCode",
   "use_key_equivalents": true,
@@ -170,14 +171,7 @@
   "formatter": "auto",
   "ensure_final_newline_on_save": true,
   "remove_trailing_whitespace_on_save": true,
-  "file_scan_exclusions": [
-    "**/node_modules",
-    "**/.next",
-    "**/dist",
-    "**/build",
-    "**/coverage",
-    "..."
-  ],
+  "file_scan_exclusions": ["..."],
   "languages": {
     "JavaScript": {
       "tab_size": 2,

@@ -1,19 +1,28 @@
-config_version = 15
+config_version = 16
 
-[bar.default]
-end = [
-    "media",
-    "notifications",
-    "clipboard",
-    "network",
-    "bluetooth",
-    "volume",
-    "brightness",
-    "battery",
-    "control-center",
-    "session"
-]
-start = [ "launcher", "wallpaper", "group:workspaces_group", "tray", "clock" ]
+[bar]
+order = [ "default" ]
+
+    [bar.default]
+    end = [
+        "keyboard_layout",
+        "media",
+        "notifications",
+        "clipboard",
+        "network",
+        "bluetooth",
+        "volume",
+        "brightness",
+        "battery",
+        "control-center",
+        "session"
+    ]
+    start = [ "launcher", "wallpaper", "group:workspaces_group", "tray", "audio_visualizer", "clock" ]
+
+[dock]
+auto_hide = true
+position = "left"
+reserve_space = false
 
 [lockscreen_widgets]
 enabled = false
@@ -37,7 +46,7 @@ widget_order = [ "lockscreen-login-box@eDP-1" ]
     type = "login_box"
 
         [lockscreen_widgets.widget."lockscreen-login-box@eDP-1".settings]
-        background_color = "surface_variant"
+        background_color = "surface_container"
         background_opacity = 0.88
         background_radius = 12.0
         center_password_text = false
@@ -53,16 +62,28 @@ widget_order = [ "lockscreen-login-box@eDP-1" ]
         show_unlock_hint = true
         show_weather = true
 
+[shell]
+avatar_path = "@@HOME@@/Pictures/wallpapers/mortal-shell-knight-5120x2880-27506.jpg"
+
 [wallpaper.default]
-path = "@@HOME@@/Pictures/wallpapers/minimal-enso-samurai-4k.png"
+path = "@@HOME@@/Pictures/wallpapers/dramatic-scenery-3840x2160-20802.jpg"
 
 [wallpaper.last]
-path = "@@HOME@@/Pictures/wallpapers/minimal-enso-samurai-4k.png"
+path = "@@HOME@@/Pictures/wallpapers/dramatic-scenery-3840x2160-20802.jpg"
 
 [wallpaper.monitors.eDP-1]
-path = "@@HOME@@/Pictures/wallpapers/minimal-enso-samurai-4k.png"
+path = "@@HOME@@/Pictures/wallpapers/dramatic-scenery-3840x2160-20802.jpg"
+
+[widget.clipboard]
+enabled = false
 
 [widget.control-center]
+enabled = false
+
+[widget.keyboard_layout]
+show_glyph = false
+
+[widget.launcher]
 enabled = false
 
 [widget.media]
