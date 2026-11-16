@@ -1,9 +1,10 @@
-# Apple / Sumi Red
+# Sumi Red / Bibata + Apple
 
-Курсоры Apple в палитре рабочего стола Honor: тёплый светлый `#E6E0D9`,
+Основной указатель — Bibata Modern, остальные курсоры — Apple, в палитре рабочего стола Honor: тёплый светлый `#E6E0D9`,
 тёмная обводка `#090A0D`, красные акценты `#D95757` / `#9B454B`.
 Цветные индикаторы ожидания перекрашены в красную гамму, анимации сохранены.
-Включены 14 размеров от 16 до 96 px, в том числе 24 и 48 для масштаба 200%.
+Мягкие SVG-тени отключены. Каждый размер рисуется напрямую из SVG, без
+уменьшения промежуточного PNG. Включены 14 размеров от 16 до 96 px, в том числе 24 и 48 для масштаба 200%.
 
 ![Превью курсоров](preview.png)
 
@@ -16,8 +17,11 @@ GTK, dconf и пользовательскую тему по умолчанию.
 
 Основа: [ful1e5/apple_cursor](https://github.com/ful1e5/apple_cursor),
 commit `fe044a42b4e9cea16ea762d2ed9004f6d7b35543`, лицензия GPL-3.0.
-Оригинальные SVG, manifest с hotspots/алиасами и лицензия включены в `source/`.
-Изменения цвета выполняет `source/render.cjs`; сборку — `source/build.py`.
+Основной указатель заменён на [Bibata Modern](https://github.com/ful1e5/Bibata_Cursor),
+commit `ddb09273cde49faeb6a32282660ff4293f52d6e0`,
+`svg/groups/modern/left_ptr.svg`, hotspot 55/17 на холсте 256px; GPL-3.0.
+SVG, manifest с hotspots/алиасами и обе лицензии включены в `source/`.
+Цвета и отключение теней выполняет `source/render.cjs`; сборку напрямую из PNG конечного размера — `source/build.py`.
 
 Сборка не требует sudo, но нужны Node.js/npm, Python и venv:
 
@@ -27,6 +31,13 @@ npm ci --no-audit --no-fund
 python -m venv .venv
 .venv/bin/pip install -r requirements.txt
 PATH="$PWD/.venv/bin:$PATH" .venv/bin/python build.py
+```
+
+Чтобы сохранить растры конечных размеров и обновить галерею:
+
+```bash
+PATH="$PWD/.venv/bin:$PATH" .venv/bin/python build.py --bitmaps /tmp/sumi-red-bitmaps
+.venv/bin/python preview.py /tmp/sumi-red-bitmaps
 ```
 
 Для возврата Adwaita задайте `xcursor-theme "Adwaita"` в `niri/cfg/misc.kdl`,

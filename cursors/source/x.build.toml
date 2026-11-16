@@ -126,10 +126,11 @@ x11_symlinks = [
   "pointing_hand",
 ]
 
+# Bibata Modern pointer; upstream hotspot follows the rounded tip.
 [cursors.left_ptr]
 png = 'left_ptr.png'
-x_hotspot = 80
-y_hotspot = 38
+x_hotspot = 55
+y_hotspot = 17
 x11_name = 'left_ptr'
 x11_symlinks = ["arrow", "default", "top_left_arrow"]
 

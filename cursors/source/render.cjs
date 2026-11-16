@@ -3,7 +3,8 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { Resvg } = require('@resvg/resvg-js');
 const out = process.argv[2];
-fs.mkdirSync(out, { recursive: true });
+const sizes = (process.argv[3] || '256').split(',').map(Number);
+for (const size of sizes) fs.mkdirSync(path.join(out, String(size)), { recursive: true });
 const dark = [0x6b, 0x30, 0x34], light = [0xff, 0x90, 0x90];
 function color(match) {
   const c = match.toUpperCase();
@@ -22,9 +23,12 @@ function walk(dir) {
     const p = path.join(dir, ent.name);
     if (ent.isDirectory()) { walk(p); continue; }
     if (!p.endsWith('.svg')) continue;
-    const svg = fs.readFileSync(p, 'utf8').replace(/\bwhite\b/gi, '#E6E0D9').replace(/\bblack\b/gi, '#090A0D').replace(/#[0-9a-f]{6}\b/gi, color);
-    const png = new Resvg(svg).render().asPng();
-    fs.writeFileSync(path.join(out, ent.name.replace(/\.svg$/, '.png')), png);
+    const svg = fs.readFileSync(p, 'utf8').replace(/\bwhite\b/gi, '#E6E0D9').replace(/\bblack\b/gi, '#090A0D').replace(/#[0-9a-f]{6}\b/gi, color).replace(/\sfilter="[^"]*"/g, '');
+    // Rasterize the vector at each final size; never resize a PNG.
+    for (const size of sizes) {
+      const png = new Resvg(svg, { fitTo: { mode: 'width', value: size } }).render().asPng();
+      fs.writeFileSync(path.join(out, String(size), ent.name.replace(/\.svg$/, '.png')), png);
+    }
   }
 }
 walk(path.join(__dirname, 'svg'));
