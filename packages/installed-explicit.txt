@@ -23,6 +23,8 @@ firefox
 fish
 foot
 fprintd
+freerdp
+fuse2
 fuzzel
 git
 github-cli
@@ -80,6 +82,7 @@ qt6-multimedia
 qt6-virtualkeyboard
 qt6-wayland
 qt6ct
+remmina
 ripgrep
 rtkit
 rust

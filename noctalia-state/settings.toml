@@ -62,17 +62,20 @@ widget_order = [ "lockscreen-login-box@eDP-1" ]
         show_unlock_hint = true
         show_weather = true
 
+[plugins]
+enabled = [ "pk/geoip-monitor" ]
+
 [shell]
 avatar_path = "@@HOME@@/Pictures/wallpapers/mortal-shell-knight-5120x2880-27506.jpg"
 
 [wallpaper.default]
-path = "@@HOME@@/Pictures/wallpapers/dramatic-scenery-3840x2160-20802.jpg"
+path = "@@HOME@@/Pictures/wallpapers/guts-black-5120x2880-21420.png"
 
 [wallpaper.last]
-path = "@@HOME@@/Pictures/wallpapers/dramatic-scenery-3840x2160-20802.jpg"
+path = "@@HOME@@/Pictures/wallpapers/guts-black-5120x2880-21420.png"
 
 [wallpaper.monitors.eDP-1]
-path = "@@HOME@@/Pictures/wallpapers/dramatic-scenery-3840x2160-20802.jpg"
+path = "@@HOME@@/Pictures/wallpapers/guts-black-5120x2880-21420.png"
 
 [widget.clipboard]
 enabled = false
@@ -88,3 +91,6 @@ enabled = false
 
 [widget.media]
 enabled = false
+
+[widget.status]
+type = "pk/geoip-monitor:status"

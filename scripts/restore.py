@@ -16,6 +16,7 @@ TARGETS.update({'zed/config': CONFIG/'zed', 'zed/codebook': CONFIG/'codebook',
                'brave-flags.conf': CONFIG/'brave-flags.conf',
                'spellcheck/chatgpt': HOME/'.local/bin/chatgpt',
                'spellcheck/chatgpt.desktop': DATA/'applications/chatgpt.desktop',
+               'applications/anydesk.desktop': DATA/'applications/anydesk.desktop',
                'scripts/terminal-english.py': HOME/'.local/lib/terminal-english.py',
                'systemd/user/terminal-english.service': CONFIG/'systemd/user/terminal-english.service',
                'noctalia-state/settings.toml': STATE/'noctalia/settings.toml'})
@@ -100,6 +101,8 @@ def main():
             for mime in ['text/html','application/xhtml+xml','x-scheme-handler/http','x-scheme-handler/https']:
                 subprocess.run(['xdg-mime','default','brave-browser.desktop',mime], check=True)
         else: print('Brave не установлен: сначала выполните install-packages.sh, затем restore.sh.')
+        if shutil.which('update-desktop-database'):
+            subprocess.run(['update-desktop-database', str(DATA/'applications')], check=True)
         if shutil.which('noctalia'):
             subprocess.run(['noctalia','msg','config-reload'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         print('Установлено. Резервная копия:', backup)
