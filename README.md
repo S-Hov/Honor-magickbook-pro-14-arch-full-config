@@ -109,6 +109,7 @@ sudo ./install-system.sh
 | `btop/`, `helix/`, `micro/`, `telegram-desktop/` | Темы приложений |
 | `codex/themes/`, `color-schemes/` | Дополнительные цветовые схемы |
 | `wallpapers/` | Обои из прежней сборки |
+| `cursors/` | Apple Cursor в Sumi Red, готовая тема, исходники и сборка |
 | `applications/anydesk.desktop` | AnyDesk в отдельной systemd scope, ожидание остановки до 10 секунд |
 | `brave-flags.conf` | Brave через Wayland, Vulkan отключён для совместимости |
 | `grub/void-terminal/` | Действующая тема GRUB, иконки, шрифты, макет и установщик |
@@ -124,6 +125,13 @@ Brave — браузер по умолчанию для HTTP/HTTPS/HTML и на 
 Noctalia v5 устанавливается из официального репозитория Arch.
 Zed использует VSCode Dark Modern и Material Icon Theme. Локальный ИИ отключён:
 моделей Ollama, ИИ-коммитов и локального переводчика в этом наборе нет.
+
+## Курсор Apple / Sumi Red
+
+Формы Apple Cursor с тёплым светлым указателем, почти чёрной обводкой и
+приглушёнными красными акцентами. Анимации сохранены; размер 24, предусмотрены
+HiDPI-ресурсы для масштаба 200%. Тема устанавливается вместе с конфигами.
+[Превью, исходники и сборка](cursors/README.md).
 
 ## Завершение сеанса и текущий снимок
 

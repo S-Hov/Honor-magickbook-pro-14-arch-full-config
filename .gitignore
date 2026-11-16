@@ -32,3 +32,8 @@ __pycache__/
 *.tar.gz
 *.sha256
 .backups/
+
+# Cursor build tools and intermediate renders
+/cursors/source/node_modules/
+/cursors/source/.venv/
+/cursors/source/bitmaps/

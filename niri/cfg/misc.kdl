@@ -2,6 +2,12 @@
 prefer-no-csd
 screenshot-path null
 
+// Apple shapes in the Sumi Red palette; HiDPI assets are included.
+cursor {
+    xcursor-theme "Apple-Sumi-Red"
+    xcursor-size 24
+}
+
 environment {
     ELECTRON_OZONE_PLATFORM_HINT "auto"
     QT_QPA_PLATFORM "wayland"

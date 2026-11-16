@@ -12,6 +12,8 @@ APPS = 'niri fish kitty noctalia gtk-3.0 gtk-4.0 btop helix yazi qt5ct qt6ct mic
 TARGETS = {name: CONFIG / name for name in APPS}
 TARGETS.update({'zed/config': CONFIG/'zed', 'zed/codebook': CONFIG/'codebook',
                'wallpapers': HOME/'Pictures/wallpapers', 'color-schemes': DATA/'color-schemes',
+               'cursors/Apple-Sumi-Red': DATA/'icons/Apple-Sumi-Red',
+               'cursors/default/index.theme': DATA/'icons/default/index.theme',
                'codex/themes': Path(os.environ.get('CODEX_HOME', HOME/'.codex'))/'themes',
                'brave-flags.conf': CONFIG/'brave-flags.conf',
                'spellcheck/chatgpt': HOME/'.local/bin/chatgpt',
