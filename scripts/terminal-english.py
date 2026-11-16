@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Select English when a Kitty window gains focus in Niri."""
+"""Use English in Kitty and restore the previous layout when leaving it."""
 import json
 import subprocess
 
@@ -7,21 +7,43 @@ import subprocess
 def main():
     windows = {}
     focused = None
+    previous_layout = None
 
     def focus(window_id):
-        nonlocal focused
-        changed = window_id != focused
+        nonlocal focused, previous_layout
+        if window_id == focused:
+            return
+        # Keep the saved layout through temporary lack of window focus (menus,
+        # launchers, closing a window) until another application gets focus.
+        if window_id is None:
+            focused = None
+            return
+        if window_id not in windows:
+            return
+        # Recheck live focus: queued events must not affect another app.
+        current = json.loads(subprocess.check_output(
+            ["niri", "msg", "-j", "focused-window"], text=True, timeout=3
+        ))
+        if not current or current["id"] != window_id:
+            return
         focused = window_id
-        if changed and windows.get(window_id, {}).get("app_id") == "kitty":
-            # Recheck live focus: queued events must not affect another app.
-            current = json.loads(subprocess.check_output(
-                ["niri", "msg", "-j", "focused-window"], text=True, timeout=3
-            ))
-            if current and current["id"] == window_id:
-                subprocess.run(
-                    ["niri", "msg", "action", "switch-layout", "0"],
-                    check=True, timeout=3,
-                )
+        if windows[window_id].get("app_id") == "kitty":
+            # Moving between terminal windows must not overwrite the layout
+            # saved before entering the first terminal.
+            if previous_layout is None:
+                previous_layout = json.loads(subprocess.check_output(
+                    ["niri", "msg", "-j", "keyboard-layouts"], text=True, timeout=3
+                ))["current_idx"]
+            target_layout = 0
+        elif previous_layout is not None:
+            target_layout = previous_layout
+            previous_layout = None
+        else:
+            return
+        subprocess.run(
+            ["niri", "msg", "action", "switch-layout", str(target_layout)],
+            check=True, timeout=3,
+        )
 
     with subprocess.Popen(
         ["niri", "msg", "-j", "event-stream"], stdout=subprocess.PIPE, text=True
