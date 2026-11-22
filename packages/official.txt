@@ -30,6 +30,7 @@ pipewire-alsa
 rtkit
 alsa-utils
 brightnessctl
+udev-hid-bpf
 power-profiles-daemon
 python-gobject
 usbutils

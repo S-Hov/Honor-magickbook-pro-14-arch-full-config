@@ -99,6 +99,7 @@ telegram-desktop
 ttf-hack-nerd
 ttf-jetbrains-mono-nerd
 unzip
+udev-hid-bpf
 usbutils
 vim
 visual-studio-code-bin

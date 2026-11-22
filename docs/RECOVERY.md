@@ -50,3 +50,15 @@ sudo grub-script-check /boot/grub/grub.cfg
 уберите acpi_override из HOOKS. Затем выполните `sudo mkinitcpio -P`.
 На этой модели возврат к исходной прошивке может снова отключить тачпад;
 подготовьте внешнюю мышь. Самостоятельно переносить AML другого BIOS нельзя.
+
+## Отключить жест яркости тачпада
+
+Если до установки уже были эти файлы, их копии находятся в системном бэкапе.
+Для отключения уберите правило автоматической загрузки и объект, затем
+перезагрузите систему, чтобы выгрузить текущую программу HID-BPF.
+
+```bash
+sudo rm /etc/udev/rules.d/99-hid-bpf-honor-tops0102-edge.rules
+sudo rm /etc/udev-hid-bpf/honor-tops0102-edge.bpf.o
+sudo udevadm control --reload-rules
+```

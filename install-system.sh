@@ -5,10 +5,16 @@ with_acpi=0
 case "${1:-}" in
     '') ;;
     --acpi) with_acpi=1 ;;
-    --dry-run) echo 'Установка: GRUB void-terminal, SDDM Sumi Red, NetworkManager, Bluetooth, PPD, ALSA. ACPI только с --acpi.'; exit 0 ;;
+    --dry-run) echo 'Установка: GRUB void-terminal, SDDM Sumi Red, NetworkManager, Bluetooth, PPD, ALSA, жест яркости Goodix. ACPI только с --acpi.'; exit 0 ;;
     *) echo 'Использование: sudo ./install-system.sh [--acpi]' >&2; exit 1 ;;
 esac
 (( EUID == 0 )) || { echo 'Нужен sudo.' >&2; exit 1; }
+command -v udev-hid-bpf >/dev/null || {
+    echo 'Нужен пакет udev-hid-bpf. Установите его через ./install-packages.sh.' >&2
+    exit 1
+}
+edge_object=/etc/udev-hid-bpf/honor-tops0102-edge.bpf.o
+edge_rule=/etc/udev/rules.d/99-hid-bpf-honor-tops0102-edge.rules
 # Do not replace another display manager or terminate its session.
 if [[ -L /etc/systemd/system/display-manager.service ]] && [[ $(readlink -f /etc/systemd/system/display-manager.service) != /usr/lib/systemd/system/sddm.service ]]; then
     echo 'Обнаружен другой display manager. Сначала отключите его вручную.' >&2; exit 1
@@ -28,6 +34,7 @@ fi
 backup="/var/backups/arch-honor-config-$(date +%Y%m%d-%H%M%S)"
 install -d -m755 "$backup/files"
 paths=(/etc/udev/rules.d/99-honor-focaltech-phantom-mic.rules /etc/grub.d/29_honor_windows /etc/default/grub /boot/grub/grub.cfg /etc/sddm.conf.d/90-sumi-red.conf /etc/mkinitcpio.conf /etc/initcpio/install/acpi_override /usr/lib/firmware/acpi/SSDT27_TPD0.aml)
+paths+=("$edge_object" "$edge_rule")
 for file in "${paths[@]}"; do
     if [[ -e "$file" ]]; then
         install -d "$backup/files$(dirname "$file")"
@@ -87,7 +94,23 @@ PY
 fi
 # Ignore only the bogus keyboard collection of the FocalTech touchscreen.
 install -D -m644 "$repo_dir/hardware/udev/99-honor-focaltech-phantom-mic.rules" /etc/udev/rules.d/99-honor-focaltech-phantom-mic.rules
+install -D -m644 "$repo_dir/hardware/touchpad-edge/${edge_object##*/}" "$edge_object"
+install -D -m644 "$repo_dir/hardware/udev/${edge_rule##*/}" "$edge_rule"
 udevadm control --reload-rules
+# Attach to an already present touchpad without reprobe or duplicate handlers.
+# If ACPI exposes it after reboot, the udev add rule handles it then.
+for device in /sys/bus/hid/devices/0018:27C6:0F9A.*; do
+    [[ -r "$device/modalias" ]] || continue
+    [[ $(<"$device/modalias") == hid:b0018g0004v000027C6p00000F9A ]] || continue
+    loaded=$(udev-hid-bpf list-loaded --syspath "$device")
+    grep -Fq '"name": "honor_tops0102_edge"' <<< "$loaded" && continue
+    udev-hid-bpf add "$device" "$edge_object"
+    loaded=$(udev-hid-bpf list-loaded --syspath "$device")
+    if ! grep -Fq '"name": "honor_tops0102_edge"' <<< "$loaded"; then
+        echo "Не удалось загрузить HID-BPF для $device." >&2
+        exit 1
+    fi
+done
 systemctl enable sddm.service
 systemctl enable --now NetworkManager.service bluetooth.service power-profiles-daemon.service
 alsactl store
