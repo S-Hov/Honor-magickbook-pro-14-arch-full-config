@@ -47,6 +47,9 @@ binds {
     // Вся ширина монитора независимо от соседних колонок; повтор возвращает размер.
     Mod+Ctrl+F repeat=false { maximize-column; }
     Mod+T       { toggle-window-floating; }
+    Mod+Shift+T repeat=false hotkey-overlay-title="Float / tile all open windows" {
+        spawn-sh "python3 \"${XDG_CONFIG_HOME:-$HOME/.config}/niri/cfg/toggle-floating-windows.py\""
+    }
     Mod+W       { toggle-column-tabbed-display; }
     Mod+R       { switch-preset-column-width; }
     Mod+Minus       { set-column-width "-5%"; }
