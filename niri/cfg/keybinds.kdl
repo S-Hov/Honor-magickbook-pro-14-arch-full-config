@@ -102,6 +102,12 @@ binds {
     Mod+WheelScrollUp   cooldown-ms=150 { focus-workspace-up; }
     Mod+WheelScrollDown cooldown-ms=150 { focus-workspace-down; }
 
+    // Колесо с Mod+Shift и боковое колесо с Mod переключают окна.
+    Mod+Shift+WheelScrollUp   cooldown-ms=150 { focus-column-left; }
+    Mod+Shift+WheelScrollDown cooldown-ms=150 { focus-column-right; }
+    Mod+WheelScrollLeft       cooldown-ms=150 { focus-column-left; }
+    Mod+WheelScrollRight      cooldown-ms=150 { focus-column-right; }
+
     // Обзор, справка и безопасность / Overview, help and safety
     Mod+O repeat=false { toggle-overview; }
     Mod+Shift+Slash { show-hotkey-overlay; }
