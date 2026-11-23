@@ -13,10 +13,10 @@
 
 ## Если новый SDDM не открывается
 
-Перейдите на TTY (`Ctrl+Alt+F3`), войдите обычным пользователем и отключите тему:
+Перейдите на TTY (`Ctrl+Alt+F3`), войдите обычным пользователем и верните тему Sumi Red.
 
 ```bash
-sudo mv /etc/sddm.conf.d/90-sumi-red.conf /etc/sddm.conf.d/90-sumi-red.conf.disabled
+sudo mv /etc/sddm.conf.d/99-ryoku-orbital.conf /etc/sddm.conf.d/99-ryoku-orbital.conf.disabled
 sudo systemctl restart sddm
 ```
 

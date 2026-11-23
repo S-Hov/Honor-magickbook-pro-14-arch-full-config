@@ -46,11 +46,10 @@
 
 ### Экран входа SDDM
 
-Графитовая форма, красные акценты, русская дата и масштаб 200%.
-Ниже — **реальный скриншот режима предпросмотра SDDM**, запущенного на ноутбуке.
-Это предпросмотр оформления, а не фиксация успешной авторизации.
+Qylock Orbital с анимированными часами, английским интерфейсом и масштабом 200%.
+Скриншот сделан на ноутбуке в режиме предпросмотра SDDM. Имя пользователя заменено на `USER`.
 
-![Предпросмотр экрана входа Sumi Red](screenshots/04-login-preview.png)
+![Предпросмотр экрана входа Qylock Orbital](screenshots/04-login-preview.png)
 
 ### Загрузчик GRUB — Void Terminal
 
@@ -114,7 +113,7 @@ sudo ./install-system.sh
 | `brave-flags.conf` | Brave через Wayland, Vulkan отключён для совместимости |
 | `grub/void-terminal/` | Действующая тема GRUB, иконки, шрифты, макет и установщик |
 | `grub/CyberEXS/` | Сохранённая прежняя тема GRUB |
-| `sddm/` | Экран входа Sumi Red и конфиг масштаба 200% |
+| `sddm/` | Qylock Orbital, запасная тема Sumi Red и конфиг масштаба 200% |
 | `hardware/` | HID-BPF для жеста яркости, ACPI override, mkinitcpio hook, паспорт совместимости |
 | `packages/` | Установочные списки и справочный снимок установленных пакетов |
 | `scripts/` | Переносимое восстановление с проверкой и резервными копиями |
@@ -239,6 +238,10 @@ Wi-Fi подключается; динамики работают через Pip
 
 - CyberEXS 1.0.0 — архив, предоставленный владельцем ноутбука; ресурсы сохранены.
   В архиве не было отдельного файла лицензии, общая лицензия на них не назначается.
+- Тема Qylock Orbital взята из [Ryoku](https://github.com/Ryoku-dev/ryoku/tree/0bf11741b22f69f22ad2733025671c7d0a5e1a47/ryoku/lockscreen/qylock).
+  Исходная тема принадлежит проекту [Qylock](https://github.com/Darkkal44/qylock).
+  В адаптации от 23.11.2026 используются английский интерфейс, 24-часовое время и Qt Quick Effects.
+  Лицензии темы и шрифта находятся в `sddm/ryoku-orbital/`.
 - SDDM Sumi Red — производная от [Keyitdev/sddm-astronaut-theme](https://github.com/Keyitdev/sddm-astronaut-theme).
   Исходные notices и GPL-3.0-or-later сохранены в `sddm/sumi-red/LICENSE`.
 - Остальные темы, плагины Fish и конфиги происходят из старого репозитория и

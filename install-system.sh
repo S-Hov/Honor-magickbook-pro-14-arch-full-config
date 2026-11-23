@@ -5,7 +5,7 @@ with_acpi=0
 case "${1:-}" in
     '') ;;
     --acpi) with_acpi=1 ;;
-    --dry-run) echo 'Установка: GRUB void-terminal, SDDM Sumi Red, NetworkManager, Bluetooth, PPD, ALSA, жест яркости Goodix. ACPI только с --acpi.'; exit 0 ;;
+    --dry-run) echo 'Установка: GRUB void-terminal, SDDM Qylock Orbital, NetworkManager, Bluetooth, PPD, ALSA, жест яркости Goodix. ACPI только с --acpi.'; exit 0 ;;
     *) echo 'Использование: sudo ./install-system.sh [--acpi]' >&2; exit 1 ;;
 esac
 (( EUID == 0 )) || { echo 'Нужен sudo.' >&2; exit 1; }
@@ -33,7 +33,7 @@ PY
 fi
 backup="/var/backups/arch-honor-config-$(date +%Y%m%d-%H%M%S)"
 install -d -m755 "$backup/files"
-paths=(/etc/udev/rules.d/99-honor-focaltech-phantom-mic.rules /etc/grub.d/29_honor_windows /etc/default/grub /boot/grub/grub.cfg /etc/sddm.conf.d/90-sumi-red.conf /etc/mkinitcpio.conf /etc/initcpio/install/acpi_override /usr/lib/firmware/acpi/SSDT27_TPD0.aml)
+paths=(/etc/udev/rules.d/99-honor-focaltech-phantom-mic.rules /etc/grub.d/29_honor_windows /etc/default/grub /boot/grub/grub.cfg /etc/sddm.conf.d/90-sumi-red.conf /etc/sddm.conf.d/99-ryoku-orbital.conf /etc/mkinitcpio.conf /etc/initcpio/install/acpi_override /usr/lib/firmware/acpi/SSDT27_TPD0.aml)
 paths+=("$edge_object" "$edge_rule")
 for file in "${paths[@]}"; do
     if [[ -e "$file" ]]; then
@@ -44,12 +44,18 @@ done
 printf '%s\n' "$backup" > /var/backups/arch-honor-config-last
 install -d -m755 /boot/grub/themes /usr/share/sddm/themes /etc/sddm.conf.d
 [[ ! -d /boot/grub/themes/void-terminal ]] || cp -a /boot/grub/themes/void-terminal "$backup/previous-void-terminal"
-[[ ! -d /usr/share/sddm/themes/sumi-red ]] || cp -a /usr/share/sddm/themes/sumi-red "$backup/previous-sumi-red"
 cp -a "$repo_dir/grub/void-terminal" /boot/grub/themes/
-cp -a "$repo_dir/sddm/sumi-red" /usr/share/sddm/themes/
-chown -R root:root /boot/grub/themes/void-terminal /usr/share/sddm/themes/sumi-red
-chmod -R a+rX /boot/grub/themes/void-terminal /usr/share/sddm/themes/sumi-red
+chown -R root:root /boot/grub/themes/void-terminal
+chmod -R a+rX /boot/grub/themes/void-terminal
+for theme in sumi-red ryoku-orbital; do
+    theme_dir="/usr/share/sddm/themes/$theme"
+    [[ ! -d "$theme_dir" ]] || cp -a "$theme_dir" "$backup/previous-$theme"
+    cp -a "$repo_dir/sddm/$theme" /usr/share/sddm/themes/
+    chown -R root:root "$theme_dir"
+    chmod -R a+rX "$theme_dir"
+done
 install -m644 "$repo_dir/sddm/90-sumi-red.conf" /etc/sddm.conf.d/90-sumi-red.conf
+install -m644 "$repo_dir/sddm/99-ryoku-orbital.conf" /etc/sddm.conf.d/99-ryoku-orbital.conf
 if [[ -f /etc/default/grub && -f /boot/grub/grub.cfg ]]; then
     install -o root -g root -m755 "$repo_dir/grub/29_honor_windows" /etc/grub.d/29_honor_windows
     python3 - <<'PY'

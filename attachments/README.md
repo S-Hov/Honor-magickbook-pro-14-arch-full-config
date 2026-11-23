@@ -1,6 +1,6 @@
 # Дополнительные материалы
 
 Основная галерея и подписи находятся в ../screenshots/README.md.
-login-preview.png — дополнительная копия предпросмотра SDDM из этапа настройки.
+login-preview.png — копия предпросмотра темы Qylock Orbital в SDDM.
 Фон GRUB, иконки и шрифты: ../grub/CyberEXS/.
-Обои: ../wallpapers/. Фон и QML SDDM: ../sddm/sumi-red/.
+Обои: ../wallpapers/. Тема SDDM: ../sddm/ryoku-orbital/.
